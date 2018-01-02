@@ -1,3 +1,5 @@
+package mud
+
 /**
 This is a stub for the main class for your MUD.
 */
