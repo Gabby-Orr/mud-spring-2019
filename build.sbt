@@ -2,6 +2,10 @@ name := "MUD"
 version := "1.0"
 scalaVersion := "2.12.4"
 
+mainClass in (Compile, packageBin) := Some("mud.Main")
+
+mainClass in (Compile, run) := Some("mud.Main")
+
 libraryDependencies ++= Seq(
 	"com.typesafe.akka" %% "akka-actor" % "2.5.8",
 	"com.typesafe.akka" %% "akka-testkit" % "2.5.8" % Test,
