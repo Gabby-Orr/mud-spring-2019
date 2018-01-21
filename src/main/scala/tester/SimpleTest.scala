@@ -6,13 +6,17 @@ import java.io.InputStream
 import java.io.BufferedReader
 import java.io.PrintStream
 import java.io.InputStreamReader
+import akka.actor.ActorSystem
+import java.io.OutputStreamWriter
+import java.io.BufferedWriter
+import akka.actor.Props
 
 object SimpleTest extends App {
   val process = java.lang.Runtime.getRuntime.exec("sbt run".split(" "))
-  doTest(new BufferedReader(new InputStreamReader(process.getInputStream)), new PrintStream(process.getOutputStream))
+  val is = new BufferedReader(new InputStreamReader(process.getInputStream))
+  val os = new BufferedWriter(new OutputStreamWriter(process.getOutputStream))
   
-  def doTest(is: BufferedReader, os: PrintStream): Unit = {
-    // Test code goes here. I probably need to cut out the opening lines the sbt prints.
-    ???
-  }
+  val system = ActorSystem("SimpleTest")
+  val ioConfig = IOConfig("config.xml")
+  val player = system.actorOf(Props(TestPlayer("test_player",is,os,ioConfig)),"test_player")
 }
