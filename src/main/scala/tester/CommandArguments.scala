@@ -1,5 +1,9 @@
 package tester
 
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// Not intended for students to edit.
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 object CommandArgument {
   def apply(n: xml.Node): CommandArgument = (n \ "@type").text match {
     case "roomItem" => RoomItem
