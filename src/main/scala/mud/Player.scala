@@ -51,6 +51,7 @@ class Player(
   
   def addToInventory(item: Item): Unit = {
     inventory = item :: inventory
+    println({item.itemd})
   }
 
   def inventoryListing(): String = {
@@ -71,6 +72,7 @@ class Player(
     }
     if (maybeloc != None) {
       loc = maybeloc.get
+      println(loc.description)
     } else println("No exit there")
 
   }
@@ -78,10 +80,10 @@ class Player(
   def printHelp(): Unit = {
     println("Only the following commands are supported:\n")
     println(s"'north', 'south', 'east', 'west', 'up', 'down'  -- Movement; get from one room to another")
-    println(s"'look'                                          -- See descripton of current room, along with items in room")
+    println(s"'look'                                          -- See descripton of current room, along with items & exits in room")
     println("'inv'                                           -- See contents of your inventory")
-    println("'get {item}'                                    -- Type get followed by desired item to add that item to inventory")
-    println("'drop {item}'                                   -- Type drop followed by unwanted item to drop that item from inventory")
+    println("'get {item}'                                    -- Type 'get' followed by desired item to add that item to inventory")
+    println("'drop {item}'                                   -- Type 'drop' followed by unwanted item to drop that item into room")
     println("'exit'                                          -- Leave the game")
   }
 }

@@ -16,16 +16,16 @@ FamilyPhoto
 Aww, your family's so cute in little glass frame. You can see grandma, mom, dad, you, Jimmy... wait, that's not Jimmy!
 0,-1,2,-1,-1,-1
 Grandma's Bedroom
-???
+More clocks, overwhelming smell of old perfume, so many quilts.
 1
-Bedroom Item ???
-Bedroom item description & stuff ???
+Dentures
+Removable teeth. Yes, disgusting. Weapon or weakness?
 -1,-1,-1,1,3,-1
 Creepy Attic
-Intense darkness, spare for light from downstairs. You sense there's more than just cobwebs and antiques... she's definitely here.
+Darkness, spare for downstairs light. Sense more than just cobwebs and antiques... she's definitely here.
 2
-First weird Item ???
-First weird Item description ???
-Second weird Item ???
-Second weird Item description ???
+Doll
+So creepy and weird that it couldn't be made of just porcelain...
+Gun
+Not from this century & hasn't been fired in generations. Unpredictable.
 -1,-1,-1,-1,-1,2
