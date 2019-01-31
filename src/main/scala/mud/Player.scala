@@ -48,16 +48,18 @@ class Player(
       }
     }
   }
-  
+
   def addToInventory(item: Item): Unit = {
     inventory = item :: inventory
-    println({item.itemd})
+    println({ item.itemd })
   }
 
   def inventoryListing(): String = {
-    var invlist = ""
+    if (inventory.length != 0) {
+      var invlist = ""
       inventory.map(i => invlist += s"${i.itemName}--  ${i.itemd}\n")
       s"Inventory:\n$invlist"
+    } else "None"
   }
 
   def move(dir: String): Unit = {

@@ -1,6 +1,6 @@
 package mud
 
-class Room (
+class Room(
   name:              String,
   desc:              String,
   private var items: List[Item],
@@ -18,11 +18,13 @@ class Room (
   }
 
   def itemstring(): String = {
-    var itemnames = List(" ")
-    items.foreach(i => itemnames ::= (s"${i.itemName}"))
-    itemnames.mkString("  ")
+    if (items.length != 0) {
+      var itemnames = List(" ")
+      items.foreach(i => itemnames ::= (s"${i.itemName}"))
+      itemnames.mkString("  ")
+    } else { "None" }
   }
-  
+
   def description(): String = {
     s"$name\n$desc\nExits: ${exitss()}\nItems: ${itemstring()}\n"
   }
@@ -44,7 +46,7 @@ class Room (
 
   def dropItem(item: Item): Unit = {
     items ::= item
-}
+  }
 }
 
 object Room {
