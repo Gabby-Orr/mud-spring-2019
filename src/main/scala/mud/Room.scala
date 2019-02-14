@@ -52,13 +52,21 @@ class Room(
 object Room {
   val rooms = readRooms()
 
-  def readRooms(): Array[Room] = {
+    def readRooms(): Map[String, Room] = { // changed to map stuff, make work
     val source = scala.io.Source.fromFile("map.txt") //iterator of characters
     val lines = source.getLines()
     val rooms = Array.fill(lines.next.trim.toInt)(readRoom(lines)) // .trim keeps a space from messing shit up
     source.close()
     rooms
   }
+  
+//  def readRooms(): Array[Room] = {
+//    val source = scala.io.Source.fromFile("map.txt") //iterator of characters
+//    val lines = source.getLines()
+//    val rooms = Array.fill(lines.next.trim.toInt)(readRoom(lines)) // .trim keeps a space from messing shit up
+//    source.close()
+//    rooms
+//  }
 
   def readRoom(lines: Iterator[String]): Room = {
     val name = lines.next
