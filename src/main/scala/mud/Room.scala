@@ -51,7 +51,7 @@ class Room(
 
 object Room {
   val rooms = readRooms()
-
+//TODO: use map here
     def readRooms(): Map[String, Room] = { // changed to map stuff, make work
     val source = scala.io.Source.fromFile("map.txt") //iterator of characters
     val lines = source.getLines()
