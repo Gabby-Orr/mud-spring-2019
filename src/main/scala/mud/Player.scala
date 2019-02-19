@@ -5,7 +5,7 @@ import io.StdIn._
 class Player(
   val name:              String     = readLine(s"Enter player name: \n"),
   private var inventory: List[Item] = List.empty,
-  private var loc:       Room       = Room.rooms(0)) {
+  private var loc:       Room       = Room.rooms("Kitchen")) {
 
   def processCommand(command: String): Unit = {
     val input = command.split(" ")

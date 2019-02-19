@@ -14,7 +14,7 @@ HardCandy
 Who even eats these??? Could be poison or even explosive, who knows...
 FamilyPhoto
 Aww, your family's so cute in little glass frame. You can see grandma, mom, dad, you, Jimmy... wait, that's not Jimmy!
--1,Live,Bed,-1,-1,-1
+Kitchen,-1,Bed,-1,-1,-1
 Grandma's Bedroom
 More clocks, overwhelming smell of old perfume, so many quilts.
 1

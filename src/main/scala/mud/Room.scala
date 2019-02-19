@@ -1,5 +1,7 @@
 package mud
 
+import scala.collection.mutable.Map
+
 class Room(
   name:              String,
   desc:              String,
@@ -57,7 +59,13 @@ object Room {
     val lines = source.getLines()
     val rooms = Array.fill(lines.next.trim.toInt)(readRoom(lines)) // .trim keeps a space from messing shit up
     source.close()
-    rooms
+    val imap = Map[String, Room]()
+
+    for (i <- rooms) {
+      imap += Room.rooms.name -> Room
+    }
+    imap
+//    Map(name -> Room)
   }
   
 //  def readRooms(): Array[Room] = {
