@@ -53,28 +53,28 @@ class Room(
 
 object Room {
   val rooms = readRooms()
-//TODO: use map here
-    def readRooms(): Map[String, Room] = { // changed to map stuff, make work
-    val source = scala.io.Source.fromFile("map.txt") //iterator of characters
-    val lines = source.getLines()
-    val rooms = Array.fill(lines.next.trim.toInt)(readRoom(lines)) // .trim keeps a space from messing shit up
-    source.close()
-    val imap = Map[String, Room]()
-
-    for (i <- rooms) {
-      imap += Room.rooms.name -> Room
-    }
-    imap
-//    Map(name -> Room)
-  }
-  
-//  def readRooms(): Array[Room] = {
+////TODO: use map here
+//    def readRooms(): Map[String, Room] = { // changed to map stuff, make work
 //    val source = scala.io.Source.fromFile("map.txt") //iterator of characters
 //    val lines = source.getLines()
 //    val rooms = Array.fill(lines.next.trim.toInt)(readRoom(lines)) // .trim keeps a space from messing shit up
 //    source.close()
-//    rooms
+//    val imap = Map[String, Room]()
+//
+//    for (i <- rooms) {
+//      imap += Room.rooms.name -> Room
+//    }
+//    imap
+//    Map(name -> Room)
 //  }
+  
+  def readRooms(): Array[Room] = {
+    val source = scala.io.Source.fromFile("map.txt") //iterator of characters
+    val lines = source.getLines()
+    val rooms = Array.fill(lines.next.trim.toInt)(readRoom(lines)) // .trim keeps a space from messing shit up
+    source.close()
+    rooms
+  }
 
   def readRoom(lines: Iterator[String]): Room = {
     val name = lines.next
