@@ -1,11 +1,17 @@
 package mud
 
 import io.StdIn._
+import scala.collection.mutable.Buffer
+import akka.actor.Actor
 
 class Player(
-  val name:              String     = readLine(s"Enter player name: \n"),
-  private var inventory: List[Item] = List.empty,
-  private var loc:       Room       = Room.rooms(0)) {//change to read from string,, not int
+  val name:              String       = readLine(s"Enter player name: \n"),
+  private var inventory: Buffer[Item] = Buffer.empty,
+  private var loc:       Room         = Room.rooms("kitchen")) extends Actor {
+
+  def receive = {
+    case m => println("Oops in Player: " + m)
+  }
 
   def processCommand(command: String): Unit = {
     val input = command.split(" ")
@@ -33,8 +39,11 @@ class Player(
         }
       }
       case "help" => printHelp()
-      case "exit" => println("Bye, come visit Grandma again soon!\n")
-      case _      => println("That is not an accepted command\n Let grandma help you by typing 'help'")
+      case "exit" => {
+        println("Bye, come visit Grandma again soon!\n")
+        sys.exit(0)
+      }
+      case _ => println("That is not an accepted command\n Let grandma help you by typing 'help'")
     }
   }
 
@@ -50,7 +59,7 @@ class Player(
   }
 
   def addToInventory(item: Item): Unit = {
-    inventory = item :: inventory
+    inventory += item
     println({ item.itemd })
   }
 
@@ -88,4 +97,8 @@ class Player(
     println("'drop {item}'                                   -- Type 'drop' followed by unwanted item to drop that item into room")
     println("'exit'                                          -- Leave the game")
   }
+}
+
+object Player {
+  
 }

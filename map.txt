@@ -1,4 +1,5 @@
 4
+kitchen
 Kitchen
 Smells amazing, but horrible lighting & obscene amount of Christmas decorations make you feel like you're dying inside.
 2
@@ -6,21 +7,24 @@ StickofButter
 Grandma's weapon to make you slower (fatter). Not even half-melted. She must be lurking around here somewhere.
 RecipeBook
 Her greatest secrets lie here, take this & take grandma's soul.
--1,Live,-1,-1,-1,-1
+-1,live,-1,-1,-1,-1
+live
 Living Room
-Oh my lord, where are the windows? Why are there so many clocks? Why is it so stuffy in here?
+Where are the windows? Why are there so many clocks? Why is it so stuffy in here?
 2
 HardCandy
 Who even eats these??? Could be poison or even explosive, who knows...
 FamilyPhoto
 Aww, your family's so cute in little glass frame. You can see grandma, mom, dad, you, Jimmy... wait, that's not Jimmy!
-Kitchen,-1,Bed,-1,-1,-1
+kitchen,-1,bed,-1,-1,-1
+bed
 Grandma's Bedroom
 More clocks, overwhelming smell of old perfume, so many quilts.
 1
 Dentures
 Removable teeth. Yes, disgusting. Weapon or weakness?
--1,-1,-1,Live,Attic,-1
+-1,-1,-1,live,attic,-1
+attic
 Creepy Attic
 Darkness, spare for downstairs light. Sense more than just cobwebs and antiques... she's definitely here.
 2
@@ -28,4 +32,4 @@ Doll
 So creepy and weird that it couldn't be made of just porcelain...
 Gun
 Not from this century & hasn't been fired in generations. Unpredictable.
--1,-1,-1,-1,-1,Bed
+-1,-1,-1,-1,-1,bed
