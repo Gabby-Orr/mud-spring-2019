@@ -2,19 +2,29 @@ package mud
 
 import akka.actor.Actor
 import akka.actor.ActorRef
+import akka.actor.Props
 
 class PlayerManager extends Actor {
-  // we gon have some form of InputStream & OutputStream
-  // but will start by just using Console.in & Console.out
+
   import PlayerManager._
-  
+  import Main._
+
   def receive = {
-    case CheckInput => println("ay we're gonna check input")
-    case m          => println("Oops in PlayerManager: " + m)
+    case NewPlayer => {
+      println("Making this player")
+      val player = context.actorOf(Props(new Player), "player")
+    }
+    case CheckInput => {
+      for (p <- context.children) {
+        p ! Player.InputCheck
+      }
+    }
+    case m => println("Oops in PlayerManager: " + m)
   }
 
 }
 
 object PlayerManager {
+  case object NewPlayer
   case object CheckInput
 }

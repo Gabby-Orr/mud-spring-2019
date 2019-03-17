@@ -9,7 +9,19 @@ class Player(
   private var inventory: Buffer[Item] = Buffer.empty,
   private var loc:       Room         = Room.rooms("kitchen")) extends Actor {
 
+  // we gon have some form of InputStream & OutputStream
+  // but will start by just using Console.in & Console.out
+
+  import Player._
+  private var command = "word"
+
   def receive = {
+    case InputCheck => {
+      println("Type in a command")
+      if (Console.in != null) { // uh, I don't rlly think this is how it's supposed to work
+        processCommand(readLine())
+      }
+    }
     case m => println("Oops in Player: " + m)
   }
 
@@ -100,5 +112,5 @@ class Player(
 }
 
 object Player {
-  
+  case object InputCheck
 }

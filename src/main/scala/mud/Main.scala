@@ -1,8 +1,9 @@
 package mud
 
-import io.StdIn._
-import akka.actor.Props
+import scala.io.StdIn._
 import akka.actor.ActorSystem
+import akka.actor.Props
+import scala.concurrent.duration._
 
 object Main {
   import PlayerManager._
@@ -13,18 +14,20 @@ object Main {
 
     val system = ActorSystem("TheSystem")
     val PlayerManager = system.actorOf(Props[PlayerManager], "PlayerManager")
-    
-    
-    PlayerManager ! CheckInput
+    implicit val ec = system.dispatcher
+        
+    PlayerManager ! NewPlayer
+    system.scheduler.schedule(0.seconds, 100.millis, PlayerManager, CheckInput)
 
-    val player = new Player
-    var command = "word"
-    println(s"Welcome ${player.name}\n")
+    
+//    val player = new Player
+//    var command = "word"
+//    println(s"Welcome ${player.name}\n")
 
-    while (command != "exit") {
-      command = readLine()
-      player.processCommand(command)
-    }
+//    while (command != "exit") {
+//      command = readLine()
+//      player.processCommand(command)
+//    }
   }
 
 }
