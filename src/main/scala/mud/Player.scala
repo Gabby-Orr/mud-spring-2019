@@ -3,11 +3,12 @@ package mud
 import io.StdIn._
 import scala.collection.mutable.Buffer
 import akka.actor.Actor
+import akka.actor.ActorRef
 
 class Player(
   val name:              String       = readLine(s"Enter player name: \n"),
   private var inventory: Buffer[Item] = Buffer.empty,
-  private var loc:       Room         = Room.rooms("kitchen")) extends Actor {
+  private var loc:       ActorRef     = null) extends Actor {
 
   // we gon have some form of InputStream & OutputStream
   // but will start by just using Console.in & Console.out
@@ -18,9 +19,19 @@ class Player(
   def receive = {
     case InputCheck => {
       println("Type in a command")
-      if (Console.in != null) { // uh, I don't rlly think this is how it's supposed to work
+      while (Console.in.ready){//if (Console.in != null) { // uh, I don't rlly think this is how it's supposed to work
         processCommand(readLine())
       }
+    }
+    case Initialize => {
+      // move player out of null & into kitchen here
+    }
+    case PrintMessage(message: String) => println(message)
+    case TakeExit(optRoom: Option[ActorRef]) => {
+      
+    }
+    case TakeItem(optItem: Option[Item]) => {
+      
     }
     case m => println("Oops in Player: " + m)
   }
@@ -34,7 +45,7 @@ class Player(
       case "west"  => move("west")
       case "up"    => move("up")
       case "down"  => move("down")
-      case "look"  => println(loc.description)
+      case "look"  => loc ! GetDescription //println(loc.description)
       case "inv"   => println(inventoryListing())
       case "get" => {
         var finditem = loc.getItem(input(1))
@@ -113,4 +124,8 @@ class Player(
 
 object Player {
   case object InputCheck
+  case class PrintMessage(message: String)
+  case class TakeExit(optRoom: Option[ActorRef])
+  case class TakeItem(optItem: Option[Item])
+  case object Initialize
 }

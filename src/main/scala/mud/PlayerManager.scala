@@ -14,6 +14,11 @@ class PlayerManager extends Actor {
       println("Making this player")
       val player = context.actorOf(Props(new Player), "player")
     }
+    case Initialization => {
+      for (p <- context.children) {
+        p ! Player.Initialize
+      }
+    }
     case CheckInput => {
       for (p <- context.children) {
         p ! Player.InputCheck
@@ -27,4 +32,5 @@ class PlayerManager extends Actor {
 object PlayerManager {
   case object NewPlayer
   case object CheckInput
+  case object Initialization
 }

@@ -1,12 +1,31 @@
 package mud
 
-//import scala.collection.mutable.Map
+import akka.actor.Actor
+import akka.actor.ActorRef
 
 class Room(
   name:              String,
   desc:              String,
   private var items: List[Item],
-  exits:             Array[String]) {
+  exitKeys:          Array[String]) extends Actor {
+
+  import Room._
+
+  private var exits: Array[Option[ActorRef]] = null
+
+  def receive = {
+    case LinkExits(roomsMap) =>
+      exits = exitKeys.map(keyword => roomsMap.get(keyword))
+    case GetDescription =>
+      sender ! Player.PrintMessage(description())
+    case GetExit(dir) =>
+      sender ! Player.TakeExit(getExit(dir))
+    case GetItem(itemName) =>
+      sender ! Player.TakeItem(getItem(itemName))
+    case DropItem(item) =>
+      dropItem(item)
+    case m => println("Ooops in Room: " + m)
+  }
 
   def exitss(): String = {
     var e = ""
@@ -31,8 +50,10 @@ class Room(
     s"$name\n$desc\nExits: ${exitss()}\nItems: ${itemstring()}\n"
   }
 
-  def getExit(dir: Int): Option[Room] = {
-    if (exits(dir) == "-1") None else Some(Room.rooms(exits(dir)))
+  def getExit(dir: Int): Option[ActorRef] = {
+    //    if (exits(dir) == "-1") None else Some(Room.rooms(exits(dir)))
+    exits(dir)
+
   }
 
   def getItem(itemName: String): Option[Item] = {
@@ -52,25 +73,9 @@ class Room(
 }
 
 object Room {
-  val rooms = readRooms()
-
-  def readRooms(): Map[String, Room] = {
-    val source = scala.io.Source.fromFile("map.txt")
-    val lines = source.getLines()
-    val rooms = Array.fill(lines.next.trim.toInt)(readRoom(lines)).toMap
-    source.close()
-    rooms
-  }
-
-  def readRoom(lines: Iterator[String]): (String, Room) = {
-    val keyword = lines.next
-    val name = lines.next
-    val desc = lines.next
-    val items = List.fill(lines.next.trim.toInt) {
-      Item(lines.next, lines.next)
-    }
-    val exits = lines.next.split(",").map(_.trim)
-    keyword -> new Room(name, desc, items, exits)
-  }
-
+  case class LinkExits(roomsMap: Map[String, ActorRef])
+  case object GetDescription
+  case class GetExit(dir: Int)
+  case class GetItem(itemName: String)
+  case class DropItem(item: Item)
 }
