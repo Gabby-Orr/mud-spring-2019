@@ -2,8 +2,10 @@ package mud
 
 import io.StdIn._
 import scala.collection.mutable.Buffer
+import akka.actor.ActorSystem
 import akka.actor.Actor
 import akka.actor.ActorRef
+import akka.actor.Props
 
 class Player(
   val name:              String       = readLine(s"Enter player name: \n"),
@@ -14,24 +16,25 @@ class Player(
   // but will start by just using Console.in & Console.out
 
   import Player._
-  private var command = "word"
 
   def receive = {
     case InputCheck => {
-      println("Type in a command")
-      while (Console.in.ready){//if (Console.in != null) { // uh, I don't rlly think this is how it's supposed to work
-        processCommand(readLine())
+      println(">")
+      if (Console.in.ready()) { //if (Console.in != null) { // uh, I don't rlly think this is how it's supposed to work
+        processCommand(Console.in.readLine())
       }
     }
     case Initialize => {
       // move player out of null & into kitchen here
+      // loc = context.actorOf(Props[Room], "kitchen")
+
     }
     case PrintMessage(message: String) => println(message)
     case TakeExit(optRoom: Option[ActorRef]) => {
-      
+
     }
     case TakeItem(optItem: Option[Item]) => {
-      
+
     }
     case m => println("Oops in Player: " + m)
   }
@@ -48,11 +51,12 @@ class Player(
       case "look"  => loc ! GetDescription //println(loc.description)
       case "inv"   => println(inventoryListing())
       case "get" => {
-        var finditem = loc.getItem(input(1))
-        finditem match {
-          case None    => println("That item is either not in room or in your inventory already")
-          case Some(x) => addToInventory(x)
-        }
+        loc ! GetItem(input(1))
+        //        var finditem = loc.getItem(input(1))
+        //        finditem match {
+        //          case None    => println("That item is either not in room or in your inventory already")
+        //          case Some(x) => addToInventory(x)
+        //        }
       }
       case "drop" => {
         var finditem = getFromInventory(input(1))
@@ -95,19 +99,19 @@ class Player(
   }
 
   def move(dir: String): Unit = {
-    var maybeloc: Option[Room] = None
+    //    var maybeloc: Option[Room] = None
     dir match {
-      case "north" => maybeloc = loc.getExit(0)
-      case "south" => maybeloc = loc.getExit(1)
-      case "east"  => maybeloc = loc.getExit(2)
-      case "west"  => maybeloc = loc.getExit(3)
-      case "up"    => maybeloc = loc.getExit(4)
-      case "down"  => maybeloc = loc.getExit(5)
+      case "north" => loc ! GetExit(0) //maybeloc = loc.getExit(0)
+      case "south" => loc ! GetExit(1) //maybeloc = loc.getExit(1)
+      case "east"  => loc ! GetExit(2) //maybeloc = loc.getExit(2)
+      case "west"  => loc ! GetExit(3) //maybeloc = loc.getExit(3)
+      case "up"    => loc ! GetExit(4) //maybeloc = loc.getExit(4)
+      case "down"  => loc ! GetExit(5) //maybeloc = loc.getExit(5)
     }
-    if (maybeloc != None) {
-      loc = maybeloc.get
-      println(loc.description)
-    } else println("No exit there")
+    //    if (maybeloc != None) {
+    //      loc = maybeloc.get
+    //      println(loc.description)
+    //    } else println("No exit there")
 
   }
 

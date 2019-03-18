@@ -4,6 +4,8 @@ import scala.io.StdIn._
 import akka.actor.ActorSystem
 import akka.actor.Props
 import scala.concurrent.duration._
+import scala.concurrent.Future
+
 
 object Main {
   import PlayerManager._
@@ -12,9 +14,15 @@ object Main {
 
     val system = ActorSystem("TheSystem")
     val PlayerManager = system.actorOf(Props[PlayerManager], "PlayerManager")
+    val RoomManager = system.actorOf(Props[RoomManager], "RoomManager")
     implicit val ec = system.dispatcher
 
     // make new player
+    Future {
+      Console.out.println("What is your name?")
+      val name = Console.in.readLine()
+      PlayerManager ! NewPlayer(name)
+    }
     PlayerManager ! NewPlayer
     // put player in kitchen
     PlayerManager ! Initialization

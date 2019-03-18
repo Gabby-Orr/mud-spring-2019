@@ -3,16 +3,23 @@ package mud
 import akka.actor.Actor
 import akka.actor.ActorRef
 import akka.actor.Props
+import akka.actor.ActorSystem
 
 class PlayerManager extends Actor {
 
   import PlayerManager._
-  import Main._
 
   def receive = {
-    case NewPlayer => {
-      println("Making this player")
-      val player = context.actorOf(Props(new Player), "player")
+    case NewPlayer(name) => {
+      //      println("Making this player")
+      //      val player = context.actorOf(Props(new Player), "player")
+      //    }
+      if (context.children.exists(_.path.name == name)) {
+        Console.out.println("Name isn't unique. Be more creative.")
+      } else {
+        context.actorOf(Props(new Player(name)), name)
+        Console.out.println("> ")
+      }
     }
     case Initialization => {
       for (p <- context.children) {
@@ -30,7 +37,7 @@ class PlayerManager extends Actor {
 }
 
 object PlayerManager {
-  case object NewPlayer
+  case class NewPlayer(name: String)
   case object CheckInput
   case object Initialization
 }
