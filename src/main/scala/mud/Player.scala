@@ -31,6 +31,7 @@ class Player(
     }
     case StartRoom(room: ActorRef) => {
       loc = room
+      loc ! Room.GetDescription
     }
     case PrintMessage(message: String) => out.println(message)
 
@@ -46,7 +47,7 @@ class Player(
     case TakeItem(optItem: Option[Item]) => {
       optItem match {
         case Some(x) => addToInventory(x)
-        case None    => out.println("You cannot escape that direction.")
+        case None    => out.println("That item is either not in room or in your inventory already.")
       }
     }
     case m => println("Oops in Player: " + m)
@@ -111,20 +112,14 @@ class Player(
   }
 
   def move(dir: String): Unit = {
-    //    var maybeloc: Option[Room] = None
     dir match {
-      case "north" => loc ! Room.GetExit(0) //maybeloc = loc.getExit(0)
-      case "south" => loc ! Room.GetExit(1) //maybeloc = loc.getExit(1)
-      case "east"  => loc ! Room.GetExit(2) //maybeloc = loc.getExit(2)
-      case "west"  => loc ! Room.GetExit(3) //maybeloc = loc.getExit(3)
-      case "up"    => loc ! Room.GetExit(4) //maybeloc = loc.getExit(4)
-      case "down"  => loc ! Room.GetExit(5) //maybeloc = loc.getExit(5)
+      case "north" => loc ! Room.GetExit(0) 
+      case "south" => loc ! Room.GetExit(1)
+      case "east"  => loc ! Room.GetExit(2)
+      case "west"  => loc ! Room.GetExit(3)
+      case "up"    => loc ! Room.GetExit(4)
+      case "down"  => loc ! Room.GetExit(5)
     }
-    //    if (maybeloc != None) {
-    //      loc = maybeloc.get
-    //      println(loc.description)
-    //    } else println("No exit there")
-
   }
 
   def printHelp(): Unit = {

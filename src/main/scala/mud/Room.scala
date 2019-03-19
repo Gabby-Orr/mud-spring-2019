@@ -30,12 +30,12 @@ class Room(
   def exitss(): String = {
 //    Console.out.println(exits(0) + exits(1))
     var e = ""
-    if (exits(0) != None) e = "north  "
-    if (exits(1) != None) e = "south  " // != "-1"
-    if (exits(2) != None) e = "east  "
-    if (exits(3) != None) e = "west  "
-    if (exits(4) != None) e = "up  "
-    if (exits(5) != None) e = "down  "
+    if (exits(0) != None) e += "north  "
+    if (exits(1) != None) e += "south  " 
+    if (exits(2) != None) e += "east  "
+    if (exits(3) != None) e += "west  "
+    if (exits(4) != None) e += "up  "
+    if (exits(5) != None) e += "down  "
     e
   }
 
