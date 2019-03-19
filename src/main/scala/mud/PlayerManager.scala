@@ -4,26 +4,21 @@ import akka.actor.Actor
 import akka.actor.ActorRef
 import akka.actor.Props
 import akka.actor.ActorSystem
+import java.io.PrintStream
+import java.io.BufferedReader
 
 class PlayerManager extends Actor {
 
   import PlayerManager._
 
   def receive = {
-    case NewPlayer(name) => {
-      //      println("Making this player")
-      //      val player = context.actorOf(Props(new Player), "player")
-      //    }
+    case NewPlayer(name, in, out, roomManager) => {
       if (context.children.exists(_.path.name == name)) {
-        Console.out.println("Name isn't unique. Be more creative.")
+        Console.out.println("Grandma already has a grandchild with that name, make a better one.")
       } else {
-        context.actorOf(Props(new Player(name)), name)
-        Console.out.println("> ")
-      }
-    }
-    case Initialization => {
-      for (p <- context.children) {
-        p ! Player.Initialize
+        val newguy = context.actorOf(Props(new Player(name, in, out)), name)
+        out.println("> ")
+        newguy ! Player.Initialize(roomManager)
       }
     }
     case CheckInput => {
@@ -37,7 +32,7 @@ class PlayerManager extends Actor {
 }
 
 object PlayerManager {
-  case class NewPlayer(name: String)
+  case class NewPlayer(name: String, in: BufferedReader, out: PrintStream, roomManager: ActorRef)
   case object CheckInput
   case object Initialization
 }

@@ -6,35 +6,48 @@ import akka.actor.ActorSystem
 import akka.actor.Actor
 import akka.actor.ActorRef
 import akka.actor.Props
+import java.io.BufferedReader
+import java.io.PrintStream
 
 class Player(
-  val name:              String       = readLine(s"Enter player name: \n"),
-  private var inventory: Buffer[Item] = Buffer.empty,
-  private var loc:       ActorRef     = null) extends Actor {
+  val name: String         = readLine(s"Enter player name: \n"),
+  in:       BufferedReader = Console.in,
+  out:      PrintStream    = Console.out) extends Actor {
 
-  // we gon have some form of InputStream & OutputStream
-  // but will start by just using Console.in & Console.out
+  private var inventory: Buffer[Item] = Buffer.empty
+  private var loc: ActorRef = null
 
   import Player._
 
   def receive = {
     case InputCheck => {
-      println(">")
-      if (Console.in.ready()) { //if (Console.in != null) { // uh, I don't rlly think this is how it's supposed to work
-        processCommand(Console.in.readLine())
+      if (in.ready()) {
+        println(">")
+        processCommand(in.readLine())
       }
     }
-    case Initialize => {
-      // move player out of null & into kitchen here
-      // loc = context.actorOf(Props[Room], "kitchen")
-
+    case Initialize(roomManager) => {
+      roomManager ! RoomManager.GetStart
     }
-    case PrintMessage(message: String) => println(message)
-    case TakeExit(optRoom: Option[ActorRef]) => {
+    case StartRoom(room: ActorRef) => {
+      loc = room
+    }
+    case PrintMessage(message: String) => out.println(message)
 
+    case TakeExit(optRoom: Option[ActorRef]) => {
+      optRoom match {
+        case Some(x) => {
+          loc = x
+          loc ! Room.GetDescription
+        }
+        case None => out.println("You cannot escape that direction.")
+      }
     }
     case TakeItem(optItem: Option[Item]) => {
-
+      optItem match {
+        case Some(x) => addToInventory(x)
+        case None    => out.println("You cannot escape that direction.")
+      }
     }
     case m => println("Oops in Player: " + m)
   }
@@ -48,10 +61,10 @@ class Player(
       case "west"  => move("west")
       case "up"    => move("up")
       case "down"  => move("down")
-      case "look"  => loc ! GetDescription //println(loc.description)
+      case "look"  => loc ! Room.GetDescription
       case "inv"   => println(inventoryListing())
       case "get" => {
-        loc ! GetItem(input(1))
+        loc ! Room.GetItem(input(1))
         //        var finditem = loc.getItem(input(1))
         //        finditem match {
         //          case None    => println("That item is either not in room or in your inventory already")
@@ -62,13 +75,12 @@ class Player(
         var finditem = getFromInventory(input(1))
         finditem match {
           case None    => println("That item is not in your inventory")
-          case Some(x) => loc.dropItem(x)
+          case Some(x) => loc ! Room.DropItem(x)
         }
       }
       case "help" => printHelp()
       case "exit" => {
         println("Bye, come visit Grandma again soon!\n")
-        sys.exit(0)
       }
       case _ => println("That is not an accepted command\n Let grandma help you by typing 'help'")
     }
@@ -101,12 +113,12 @@ class Player(
   def move(dir: String): Unit = {
     //    var maybeloc: Option[Room] = None
     dir match {
-      case "north" => loc ! GetExit(0) //maybeloc = loc.getExit(0)
-      case "south" => loc ! GetExit(1) //maybeloc = loc.getExit(1)
-      case "east"  => loc ! GetExit(2) //maybeloc = loc.getExit(2)
-      case "west"  => loc ! GetExit(3) //maybeloc = loc.getExit(3)
-      case "up"    => loc ! GetExit(4) //maybeloc = loc.getExit(4)
-      case "down"  => loc ! GetExit(5) //maybeloc = loc.getExit(5)
+      case "north" => loc ! Room.GetExit(0) //maybeloc = loc.getExit(0)
+      case "south" => loc ! Room.GetExit(1) //maybeloc = loc.getExit(1)
+      case "east"  => loc ! Room.GetExit(2) //maybeloc = loc.getExit(2)
+      case "west"  => loc ! Room.GetExit(3) //maybeloc = loc.getExit(3)
+      case "up"    => loc ! Room.GetExit(4) //maybeloc = loc.getExit(4)
+      case "down"  => loc ! Room.GetExit(5) //maybeloc = loc.getExit(5)
     }
     //    if (maybeloc != None) {
     //      loc = maybeloc.get
@@ -131,5 +143,6 @@ object Player {
   case class PrintMessage(message: String)
   case class TakeExit(optRoom: Option[ActorRef])
   case class TakeItem(optItem: Option[Item])
-  case object Initialize
+  case class Initialize(roomManager: ActorRef)
+  case class StartRoom(room: ActorRef)
 }

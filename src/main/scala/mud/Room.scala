@@ -28,13 +28,14 @@ class Room(
   }
 
   def exitss(): String = {
+//    Console.out.println(exits(0) + exits(1))
     var e = ""
-    if (exits(0) != "-1") e += "north  "
-    if (exits(1) != "-1") e += "south  "
-    if (exits(2) != "-1") e += "east  "
-    if (exits(3) != "-1") e += "west  "
-    if (exits(4) != "-1") e += "up  "
-    if (exits(5) != "-1") e += "down  "
+    if (exits(0) != None) e = "north  "
+    if (exits(1) != None) e = "south  " // != "-1"
+    if (exits(2) != None) e = "east  "
+    if (exits(3) != None) e = "west  "
+    if (exits(4) != None) e = "up  "
+    if (exits(5) != None) e = "down  "
     e
   }
 
@@ -51,9 +52,7 @@ class Room(
   }
 
   def getExit(dir: Int): Option[ActorRef] = {
-    //    if (exits(dir) == "-1") None else Some(Room.rooms(exits(dir)))
     exits(dir)
-
   }
 
   def getItem(itemName: String): Option[Item] = {
