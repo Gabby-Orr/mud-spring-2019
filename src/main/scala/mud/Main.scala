@@ -7,7 +7,7 @@ import scala.concurrent.duration._
 import scala.concurrent.Future
 
 
-object Main {
+object Main { //just extend App instead of passing roomManager in NewPlayer
   import PlayerManager._
   def main(args: Array[String]): Unit = {
     println("Welcome to Grandma's Hell House! Enjoy your visit! \nEnter 'help' to see list of commands\n")
