@@ -8,11 +8,13 @@ import akka.actor.ActorRef
 import akka.actor.Props
 import java.io.BufferedReader
 import java.io.PrintStream
+import java.net.Socket
 
 class Player(
-  val name: String         = readLine(s"Enter player name: \n"),
-  in:       BufferedReader = Console.in,
-  out:      PrintStream    = Console.out) extends Actor {
+  sock: Socket,
+  val name: String = readLine(s"Enter player name: \n"),
+  in: BufferedReader = Console.in,
+  out: PrintStream = Console.out) extends Actor {
 
   private var inventory: Buffer[Item] = Buffer.empty
   private var loc: ActorRef = null
@@ -22,7 +24,7 @@ class Player(
   def receive = {
     case InputCheck => {
       if (in.ready()) {
-        println(">")
+        out.println(">")
         processCommand(in.readLine())
       }
     }
@@ -47,7 +49,7 @@ class Player(
     case TakeItem(optItem: Option[Item]) => {
       optItem match {
         case Some(x) => addToInventory(x)
-        case None    => out.println("That item is either not in room or in your inventory already.")
+        case None => out.println("That item is either not in room or in your inventory already.")
       }
     }
     case m => println("Oops in Player: " + m)
@@ -58,32 +60,27 @@ class Player(
     input(0) match {
       case "north" => move("north")
       case "south" => move("south")
-      case "east"  => move("east")
-      case "west"  => move("west")
-      case "up"    => move("up")
-      case "down"  => move("down")
-      case "look"  => loc ! Room.GetDescription
-      case "inv"   => println(inventoryListing())
+      case "east" => move("east")
+      case "west" => move("west")
+      case "up" => move("up")
+      case "down" => move("down")
+      case "look" => loc ! Room.GetDescription
+      case "inv" => println(inventoryListing())
       case "get" => {
         loc ! Room.GetItem(input(1))
-        //        var finditem = loc.getItem(input(1))
-        //        finditem match {
-        //          case None    => println("That item is either not in room or in your inventory already")
-        //          case Some(x) => addToInventory(x)
-        //        }
       }
       case "drop" => {
         var finditem = getFromInventory(input(1))
         finditem match {
-          case None    => println("That item is not in your inventory")
+          case None => println("That item is not in your inventory")
           case Some(x) => loc ! Room.DropItem(x)
         }
       }
       case "help" => printHelp()
       case "exit" => {
-        println("Bye, come visit Grandma again soon!\n")
+        out.println("Bye, come visit Grandma again soon!\n")
       }
-      case _ => println("That is not an accepted command\n Let grandma help you by typing 'help'")
+      case _ => out.println("That is not an accepted command\n Let grandma help you by typing 'help'")
     }
   }
 
@@ -113,12 +110,12 @@ class Player(
 
   def move(dir: String): Unit = {
     dir match {
-      case "north" => loc ! Room.GetExit(0) 
+      case "north" => loc ! Room.GetExit(0)
       case "south" => loc ! Room.GetExit(1)
-      case "east"  => loc ! Room.GetExit(2)
-      case "west"  => loc ! Room.GetExit(3)
-      case "up"    => loc ! Room.GetExit(4)
-      case "down"  => loc ! Room.GetExit(5)
+      case "east" => loc ! Room.GetExit(2)
+      case "west" => loc ! Room.GetExit(3)
+      case "up" => loc ! Room.GetExit(4)
+      case "down" => loc ! Room.GetExit(5)
     }
   }
 
