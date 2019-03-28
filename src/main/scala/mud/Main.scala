@@ -18,18 +18,7 @@ object Main extends App {
   val roomManager = system.actorOf(Props[RoomManager], "RoomManager")
   system.scheduler.schedule(0.seconds, 100.millis, playerManager, CheckInput)
 
-  //  implicit val ec = system.dispatcher
-
   val ss = new ServerSocket(8080)
-
-  //  val in = Console.in
-  //  val out = Console.out
-
-  //  Future {
-  //    out.println("What is your name?")
-  //    val name = in.readLine()
-  //    playerManager ! NewPlayer(name, in, out, roomManager)
-  //  }
 
   while (true) {
     val sock = ss.accept()

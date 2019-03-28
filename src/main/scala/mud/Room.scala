@@ -1,13 +1,17 @@
 package mud
 
+import scala.collection.mutable.Buffer
+
 import akka.actor.Actor
 import akka.actor.ActorRef
+import akka.actor.ActorPath
 
 class Room(
-  name:              String,
+  rname:              String,
   desc:              String,
   private var items: List[Item],
-  exitKeys:          Array[String]) extends Actor {
+  exitKeys:          Array[String],
+  players:           Buffer[ActorRef]) extends Actor {
 
   import Room._
 
@@ -24,14 +28,24 @@ class Room(
       sender ! Player.TakeItem(getItem(itemName))
     case DropItem(item) =>
       dropItem(item)
+    case NewPlayer(player) => 
+      players += player
+    case RoomMessage(messenger, message) =>
+      for (p <- players) {
+        p ! Player.PrintMessage(messenger + " screamed " + message)
+      }
+    case Entry(message) => 
+      for (p <- players) {
+        p ! Player.PrintMessage(message)
+      }
     case m => println("Ooops in Room: " + m)
   }
 
   def exitss(): String = {
-//    Console.out.println(exits(0) + exits(1))
+    //    Console.out.println(exits(0) + exits(1))
     var e = ""
     if (exits(0) != None) e += "north  "
-    if (exits(1) != None) e += "south  " 
+    if (exits(1) != None) e += "south  "
     if (exits(2) != None) e += "east  "
     if (exits(3) != None) e += "west  "
     if (exits(4) != None) e += "up  "
@@ -47,8 +61,14 @@ class Room(
     } else { "None" }
   }
 
+  def playerstring(): String = {
+    var names = List(" ")
+    players.foreach(i => names ::= (i.path.name))
+    names.mkString("  ")
+  }
+  
   def description(): String = {
-    s"$name\n$desc\nExits: ${exitss()}\nItems: ${itemstring()}\n"
+    s"$rname\n$desc\nExits: ${exitss()}\nItems: ${itemstring()}\nPlayers: ${playerstring}"
   }
 
   def getExit(dir: Int): Option[ActorRef] = {
@@ -77,4 +97,7 @@ object Room {
   case class GetExit(dir: Int)
   case class GetItem(itemName: String)
   case class DropItem(item: Item)
+  case class NewPlayer(player:ActorRef)
+  case class RoomMessage(messenger: String, message: String)
+  case class Entry(message: String) 
 }

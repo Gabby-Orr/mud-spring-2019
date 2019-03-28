@@ -3,6 +3,7 @@ package mud
 import akka.actor.Actor
 import akka.actor.ActorRef
 import akka.actor.Props
+import scala.collection.mutable.Buffer
 
 class RoomManager extends Actor {
   import RoomManager._
@@ -32,7 +33,8 @@ class RoomManager extends Actor {
       Item(lines.next, lines.next)
     }
     val exits = lines.next.split(",").map(_.trim)
-    keyword -> context.actorOf(Props(new Room(name, desc, items, exits)), keyword)
+    var players = Buffer.empty[ActorRef]
+    keyword -> context.actorOf(Props(new Room(name, desc, items, exits, players)), keyword)
   }
 
 }
