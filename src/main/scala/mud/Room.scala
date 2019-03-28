@@ -23,15 +23,16 @@ class Room(
     case GetDescription =>
       sender ! Player.PrintMessage(description())
     case GetExit(dir, player, name) => {
-      sender ! Player.TakeExit(getExit(dir))
       var leaving = getExit(dir)
       leaving match {
-        case Some(x)    => {
+        case Some(x) => {
           players -= player
           self ! RoomMessage(name + " escapes and the door slams behind them.")
         }
-        case None => 
+        case None =>
       }
+      sender ! Player.TakeExit(getExit(dir))
+     // players += player
     }
     case GetItem(itemName) =>
       sender ! Player.TakeItem(getItem(itemName))
