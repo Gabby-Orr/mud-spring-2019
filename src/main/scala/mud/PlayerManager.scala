@@ -10,7 +10,7 @@ import java.net.Socket
 import scala.collection.mutable.Buffer
 import scala.collection.mutable.Map
 
-class PlayerManager extends Actor {//(players: Map[String, ActorRef]) extends Actor {
+class PlayerManager extends Actor {
 
   import PlayerManager._
   private var players = Map[String, ActorRef]()
@@ -18,17 +18,17 @@ class PlayerManager extends Actor {//(players: Map[String, ActorRef]) extends Ac
   def receive = {
     case NewPlayer(name, sock, in, out, roomManager) => {
       if (context.children.exists(_.path.name == name)) {
-        Console.out.println("Grandma already has a grandchild with that name, make a better one.")
+        out.println("Grandma already has a grandchild with that name, make a better one.")
+        sock.close
       } else {
         val newguy = context.actorOf(Props(new Player(sock, name, in, out)), name)
         out.println("> ")
-//        newguy ! Player.TakeExit(rooms("kitchen"))
         newguy ! Player.Initialize(roomManager)
         players += name -> newguy
       }
     }
     case TellSomebody(messenger, receiver, message) => {
-      players(receiver) ! Player.PrintMessage(messenger + " whispered " + message)
+      players(receiver) ! Player.PrintMessage(messenger + " whispered '" + message + "'")
     }
     case CheckInput => {
       for (p <- context.children) {
