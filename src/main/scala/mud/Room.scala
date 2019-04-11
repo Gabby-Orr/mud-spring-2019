@@ -5,15 +5,17 @@ import scala.collection.mutable.Buffer
 import akka.actor.Actor
 import akka.actor.ActorRef
 import akka.actor.ActorPath
+import DLList._
 
 class Room(
   rname:             String,
   desc:              String,
   private var items: List[Item],
   exitKeys:          Array[String],
-  players:           Buffer[ActorRef]) extends Actor {
+  players:           DLList[ActorRef]) extends Actor {//Buffer[ActorRef]) extends Actor {
 
   import Room._
+
 
   private var exits: Array[Option[ActorRef]] = null
 
@@ -26,7 +28,8 @@ class Room(
       var leaving = getExit(dir)
       leaving match {
         case Some(x) => {
-          players -= player
+          players.removeelem(player)
+          //players -= player
           self ! RoomMessage(name + " escapes and the door slams behind them.")
         }
         case None =>
@@ -41,7 +44,7 @@ class Room(
       self ! RoomMessage(name + " threw down the " + item.itemName)
     }
     case NewPlayer(player) =>
-      players += player
+      players.+=(player)
     case RoomMessage(message) =>
       for (p <- players) {
         p ! Player.PrintMessage(message)

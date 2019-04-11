@@ -4,6 +4,7 @@ import akka.actor.Actor
 import akka.actor.ActorRef
 import akka.actor.Props
 import scala.collection.mutable.Buffer
+import DLList._
 
 class RoomManager extends Actor {
   import RoomManager._
@@ -33,7 +34,7 @@ class RoomManager extends Actor {
       Item(lines.next, lines.next)
     }
     val exits = lines.next.split(",").map(_.trim)
-    var players = Buffer.empty[ActorRef]
+    var players = new DLList[ActorRef] //Buffer.empty[ActorRef]
     keyword -> context.actorOf(Props(new Room(name, desc, items, exits, players)), keyword)
   }
 
