@@ -16,6 +16,7 @@ object Main extends App {
   val system = ActorSystem("TheSystem")
   val playerManager = system.actorOf(Props[PlayerManager], "PlayerManager")
   val roomManager = system.actorOf(Props[RoomManager], "RoomManager")
+  val activityManager = system.actorOf(Props[ActivityManager], "ActivityManager")
   system.scheduler.schedule(0.seconds, 100.millis, playerManager, CheckInput)
 
   val ss = new ServerSocket(8080)

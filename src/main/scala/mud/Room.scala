@@ -12,7 +12,7 @@ class Room(
   desc:              String,
   private var items: List[Item],
   exitKeys:          Array[String],
-  players:           DLList[ActorRef]) extends Actor {//Buffer[ActorRef]) extends Actor {
+  characters:           DLList[ActorRef]) extends Actor {//Buffer[ActorRef]) extends Actor {
 
   import Room._
 
@@ -28,7 +28,7 @@ class Room(
       var leaving = getExit(dir)
       leaving match {
         case Some(x) => {
-          players.removeelem(player)
+          characters.removeelem(player)
           //players -= player
           self ! RoomMessage(name + " escapes and the door slams behind them.")
         }
@@ -44,9 +44,9 @@ class Room(
       self ! RoomMessage(name + " threw down the " + item.itemName)
     }
     case NewPlayer(player) =>
-      players.+=(player)
+      characters.+=(player)
     case RoomMessage(message) =>
-      for (p <- players) {
+      for (p <- characters) {
         p ! Player.PrintMessage(message)
       }
     case m => println("Ooops in Room: " + m)
@@ -74,7 +74,7 @@ class Room(
 
   def playerstring(): String = {
     var names = List(" ")
-    players.foreach(i => names ::= (i.path.name))
+    characters.foreach(i => names ::= (i.path.name))
     names.mkString("  ")
   }
 

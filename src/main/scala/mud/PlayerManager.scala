@@ -13,7 +13,7 @@ import scala.collection.mutable.Map
 class PlayerManager extends Actor {
 
   import PlayerManager._
-  private var players = Map[String, ActorRef]()
+  private var characters = Map[String, ActorRef]()
 
   def receive = {
     case NewPlayer(name, sock, in, out, roomManager) => {
@@ -24,11 +24,11 @@ class PlayerManager extends Actor {
         val newguy = context.actorOf(Props(new Player(sock, name, in, out)), name)
         out.println("> ")
         newguy ! Player.Initialize(roomManager)
-        players += name -> newguy
+        characters += name -> newguy
       }
     }
     case TellSomebody(messenger, receiver, message) => {
-      players(receiver) ! Player.PrintMessage(messenger + " whispered '" + message + "'")
+      characters(receiver) ! Player.PrintMessage(messenger + " whispered '" + message + "'")
     }
     case CheckInput => {
       for (p <- context.children) {
