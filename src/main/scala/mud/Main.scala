@@ -11,15 +11,19 @@ import akka.actor.Props
 import scala.concurrent.Future
 
 object Main extends App {
-  import PlayerManager._
 
   val system = ActorSystem("TheSystem")
   val playerManager = system.actorOf(Props[PlayerManager], "PlayerManager")
   val roomManager = system.actorOf(Props[RoomManager], "RoomManager")
   val activityManager = system.actorOf(Props[ActivityManager], "ActivityManager")
-  system.scheduler.schedule(0.seconds, 100.millis, playerManager, CheckInput)
+  val npcManager = system.actorOf(Props[NPCManager], "NPCManager")
+  system.scheduler.schedule(0.seconds, 100.millis, playerManager, PlayerManager.CheckInput)
+  system.scheduler.schedule(0.seconds, 1000.millis, activityManager, ActivityManager.CheckQueue)
 
   val ss = new ServerSocket(8080)
+  //  npcManager ! NPCManager.CreateNPC("Grandma", "attic")
+  //  npcManager ! NPCManager.CreateNPC("Grandpa's_Ghost", "live")
+  npcManager ! NPCManager.CreateNPC("Mom", "kitchen")
 
   while (true) {
     val sock = ss.accept()
@@ -29,7 +33,7 @@ object Main extends App {
       out.println("Welcome to Grandma's Hell House! Enjoy your visit! \nEnter 'help' to see list of commands\n")
       out.println("What is your name?")
       val name = in.readLine()
-      playerManager ! NewPlayer(name, sock, in, out, roomManager)
+      playerManager ! PlayerManager.NewPlayer(name, sock, in, out, roomManager)
     }
   }
   // send message to player manager 10 times/sec

@@ -12,10 +12,9 @@ class Room(
   desc:              String,
   private var items: List[Item],
   exitKeys:          Array[String],
-  characters:           DLList[ActorRef]) extends Actor {//Buffer[ActorRef]) extends Actor {
+  characters:        DLList[ActorRef]) extends Actor { //Buffer[ActorRef]) extends Actor {
 
   import Room._
-
 
   private var exits: Array[Option[ActorRef]] = null
 
@@ -35,7 +34,7 @@ class Room(
         case None =>
       }
       sender ! Player.TakeExit(getExit(dir))
-     // players += player
+      // players += player
     }
     case GetItem(itemName) =>
       sender ! Player.TakeItem(getItem(itemName))
@@ -43,8 +42,8 @@ class Room(
       dropItem(item)
       self ! RoomMessage(name + " threw down the " + item.itemName)
     }
-    case NewPlayer(player) =>
-      characters.+=(player)
+    case NewPlayer(character) =>
+      characters.+=(character)
     case RoomMessage(message) =>
       for (p <- characters) {
         p ! Player.PrintMessage(message)
@@ -108,6 +107,6 @@ object Room {
   case class GetExit(dir: Int, player: ActorRef, name: String)
   case class GetItem(itemName: String)
   case class DropItem(name: String, item: Item)
-  case class NewPlayer(player: ActorRef)
+  case class NewPlayer(character: ActorRef)
   case class RoomMessage(message: String)
 }

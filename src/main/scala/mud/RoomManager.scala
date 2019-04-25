@@ -15,6 +15,8 @@ class RoomManager extends Actor {
   def receive = {
     case GetStart =>
       sender ! Player.StartRoom(rooms("porch"))
+    case NPCRoom(place) =>
+      sender ! NPC.StartRoom(rooms(place))
     case m => println("Ooops in RoomManager: " + m)
   }
 
@@ -34,12 +36,13 @@ class RoomManager extends Actor {
       Item(lines.next, lines.next)
     }
     val exits = lines.next.split(",").map(_.trim)
-    var players = new DLList[ActorRef] //Buffer.empty[ActorRef]
-    keyword -> context.actorOf(Props(new Room(name, desc, items, exits, players)), keyword)
+    var characters = new DLList[ActorRef] //Buffer.empty[ActorRef]
+    keyword -> context.actorOf(Props(new Room(name, desc, items, exits, characters)), keyword)
   }
 
 }
 
 object RoomManager {
   case object GetStart
+  case class NPCRoom(place: String)
 }
