@@ -13,11 +13,8 @@ class NPCManager extends Actor {
     case CreateNPC(name, loc) => {
       println("NPCman got message to create npc")
       val newguy = context.actorOf(Props(new NPC(name)), name)
-      println(newguy)
-      newguy ! NPC.Message
       newguy ! NPC.Initiate(loc)
       npcs += name -> newguy
-      println(npcs)
     }
     case m => println("Oops in PlayerManager: " + m)
   }

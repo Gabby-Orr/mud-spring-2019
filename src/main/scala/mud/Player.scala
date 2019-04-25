@@ -18,6 +18,8 @@ class Player(
 
   private var inventory: Buffer[Item] = Buffer.empty
   private var loc: ActorRef = null
+  private var health: Int = 100
+  private var inhand: Item = null
 
   import Player._
 
@@ -92,7 +94,26 @@ class Player(
           case Some(x) => loc ! Room.DropItem(name, x)
         }
       }
-      case "help" => printHelp()
+      case "equip" => {
+        var weapon = input(1)
+        val found = inventory.find(x => x.itemName.toLowerCase() == weapon.toLowerCase())
+        found match {
+          case None => out.println("That item is not in your inventory")
+          case Some(x) => {
+            inhand = x
+            out.println("You equipped the " + weapon)
+          }
+        }
+      }
+      case "unequip" => {
+        var weapon = input(1)
+        if (weapon.toLowerCase() == inhand.itemName.toLowerCase()) {
+          inhand = null
+          out.println("You unequipped the " + weapon)
+        } else out.println("That item was not equipped.")
+      }
+      case "health" => out.println("Health level is at " + health + "%")
+      case "help"   => printHelp()
       case "exit" => {
         out.println("Bye, come visit Grandma again soon!\n")
       }
@@ -124,21 +145,21 @@ class Player(
     } else "None"
   }
 
-//  def getOut(dir: Int): Unit = {
-//    loc ! Room.GetExit(dir, self, name)
-//  }
+  //  def getOut(dir: Int): Unit = {
+  //    loc ! Room.GetExit(dir, self, name)
+  //  }
 
   def move(dir: String): Unit = {
-//    var moves = Map[String, Unit]("north" -> getOut(0), "south" -> getOut(1), "east" -> getOut(2), "west" -> getOut(3), "up" -> getOut(4), "down" -> getOut(5))
-//    moves(dir)
-        dir match {
-          case "north" => loc ! Room.GetExit(0, self, name)
-          case "south" => loc ! Room.GetExit(1, self, name)
-          case "east"  => loc ! Room.GetExit(2, self, name)
-          case "west"  => loc ! Room.GetExit(3, self, name)
-          case "up"    => loc ! Room.GetExit(4, self, name)
-          case "down"  => loc ! Room.GetExit(5, self, name)
-        }
+    //    var moves = Map[String, Unit]("north" -> getOut(0), "south" -> getOut(1), "east" -> getOut(2), "west" -> getOut(3), "up" -> getOut(4), "down" -> getOut(5))
+    //    moves(dir)
+    dir match {
+      case "north" => loc ! Room.GetExit(0, self, name)
+      case "south" => loc ! Room.GetExit(1, self, name)
+      case "east"  => loc ! Room.GetExit(2, self, name)
+      case "west"  => loc ! Room.GetExit(3, self, name)
+      case "up"    => loc ! Room.GetExit(4, self, name)
+      case "down"  => loc ! Room.GetExit(5, self, name)
+    }
   }
 
   def printHelp(): Unit = {
@@ -147,10 +168,13 @@ class Player(
     out.println("'say' {message} 							                   -- Say message to everyone in room")
     out.println("'tell' {user} {message}                          -- Send message to a specific user")
     out.println(s"'look'                                          -- See descripton of current room, along with items & exits in room")
-    out.println("'inv'                                           -- See contents of your inventory")
-    out.println("'get {item}'                                    -- Type 'get' followed by desired item to add that item to inventory")
-    out.println("'drop {item}'                                   -- Type 'drop' followed by unwanted item to drop that item into room")
-    out.println("'exit'                                          -- Leave the game")
+    out.println("'inv'                                            -- See contents of your inventory")
+    out.println("'get {item}'                                     -- Type 'get' followed by desired item to add that item to inventory")
+    out.println("'drop {item}'                                    -- Type 'drop' followed by unwanted item to drop that item into room")
+    out.println("health'                                          -- View health level")
+    out.println("'equip {item}'														    		 -- Type 'equip' followed by desired item in inventory to equip item for combat")
+    out.println("'unequip {item}'																 -- Type 'unequip' followed by equipped item to unequip item")
+    out.println("'exit'                                            -- Leave the game")
   }
 }
 

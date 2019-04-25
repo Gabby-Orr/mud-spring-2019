@@ -10,11 +10,9 @@ class NPC(name: String) extends Actor {
   private var loc: ActorRef = null
 
   def receive = {
-    case Message => println("NPC got a message")
     case Initiate(place) => {
-      println("got message to initialize")
       Main.roomManager ! RoomManager.NPCRoom(place)
-      Main.activityManager ! ActivityManager.Enqueue(Move(util.Random.nextInt(6)), 5)
+      Main.activityManager ! ActivityManager.Enqueue(Move(util.Random.nextInt(6)), 10)
     }
     case StartRoom(place) => {
       loc = place
@@ -37,9 +35,9 @@ class NPC(name: String) extends Actor {
           loc = x
           loc ! Room.NewPlayer(self)
           loc ! Room.RoomMessage(name + " enters and the door slams behind them.")
-          Main.activityManager ! ActivityManager.Enqueue(Move(util.Random.nextInt(6)), 1)
+          Main.activityManager ! ActivityManager.Enqueue(Move(util.Random.nextInt(6)), 10)
         }
-        case None => Main.activityManager ! ActivityManager.Enqueue(Move(util.Random.nextInt(6)), 1)
+        case None => Main.activityManager ! ActivityManager.Enqueue(Move(util.Random.nextInt(6)), 10)
       }
     }
     case PrintMessage(message) => //
@@ -48,7 +46,6 @@ class NPC(name: String) extends Actor {
 
 }
 object NPC {
-  case object Message
   case class Initiate(place: String)
   case class StartRoom(place: ActorRef)
   case class PrintMessage(message: String)

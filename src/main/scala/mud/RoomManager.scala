@@ -33,7 +33,7 @@ class RoomManager extends Actor {
     val name = lines.next
     val desc = lines.next
     val items = List.fill(lines.next.trim.toInt) {
-      Item(lines.next, lines.next)
+      Item(lines.next, lines.next, lines.next.trim.toInt, lines.next.trim.toInt)
     }
     val exits = lines.next.split(",").map(_.trim)
     var characters = new DLList[ActorRef] //Buffer.empty[ActorRef]

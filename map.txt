@@ -5,8 +5,12 @@ You stand before the old, dark house, and feel a deep sense of dread as you watc
 2
 Plant
 Hasn't been watered in years, and crumbles to the touch. Pot may be useful though.
+15
+40
 Smokey
 Grandma's cat, covered in scars and fearless. Will defend you if you feed her.
+40
+10
 -1,-1,-1,kitchen,-1,-1
 kitchen
 Kitchen
@@ -14,8 +18,12 @@ Smells like cookies, but flickering lights and insane amount of Christmas decora
 2
 Butter
 Just a stick of butter. Grandma's weapon to make you fatter.
+5
+20
 Cookbook
 Her greatest secrets lie here, take this & take grandma's soul.
+10
+25
 -1,live,porch,-1,-1,-1
 live
 Living Room
@@ -23,8 +31,12 @@ No windows, but plenty of loud, ticking cat clocks and obnoxious floral wallpape
 2
 HardCandy
 Who even eats these? Could be poison or even explosive, who knows...
+20
+15
 Photo
 Aww, your family's so cute in this little frame. You can see grandma, mom, dad, you, grandpa... wait, that's not grandpa!
+15
+30
 kitchen,-1,bed,-1,-1,-1
 bed
 Grandma's Bedroom
@@ -32,8 +44,12 @@ Maybe the scariest room in the house, full of unknowns. More clocks, more tickin
 2
 Mirror
 A hand mirror, but it's not your face you see when you check your reflection.
+5
+15
 TeddyBear
 Raggedy and oddly heavy, the eyes have a sinister gleam.
+2
+15
 -1,bath,-1,live,attic,-1
 bath
 Grandma's Bathroom
@@ -41,8 +57,12 @@ Overwhelming smell and haze of old person perfume, grey hairs and lipsticks litt
 2
 Dentures
 Removable teeth. Weapon or weakness?
+30
+30
 Syringe
 Needle is sharp, and holds a dark black liquid.
+45
+12
 bed,-1,-1,-1,-1,-1
 attic
 Creepy Attic
@@ -50,6 +70,10 @@ Sense more than just cobwebs and antiques... she lurks about in the darkness.
 2
 Doll
 So creepy and weird that it couldn't be made of just porcelain...
+5
+40
 Gun
 Not from this century & hasn't been fired in generations. Unpredictable.
+5
+40
 -1,-1,-1,-1,-1,bed
