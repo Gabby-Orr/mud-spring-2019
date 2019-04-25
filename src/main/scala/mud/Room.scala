@@ -6,6 +6,7 @@ import akka.actor.Actor
 import akka.actor.ActorRef
 import akka.actor.ActorPath
 import DLList._
+import scala.collection.mutable
 
 class Room(
   rname:             String,
@@ -14,6 +15,8 @@ class Room(
   exitKeys:          Array[String],
   characters:        DLList[ActorRef]) extends Actor { //Buffer[ActorRef]) extends Actor {
 
+  val victims = mutable.Map[String, ActorRef]()
+    
   import Room._
   import Player._
   import NPC._
@@ -21,8 +24,10 @@ class Room(
   private var exits: Array[Option[ActorRef]] = null
 
   def receive = {
-    case LinkExits(roomsMap) =>
+    case LinkExits(roomsMap) => {
+      sender ! RoomManager.ExitInfo(rname, exitKeys)
       exits = exitKeys.map(keyword => roomsMap.get(keyword))
+    }
     case GetDescription =>
       sender ! Player.PrintMessage(description())
     case GetExit(dir, player, name) => {
@@ -37,11 +42,11 @@ class Room(
       }
       sender ! Player.TakeExit(getExit(dir))
     }
-    case NPCExit(dir, player, name) => {
+    case NPCExit(dir, npc, name) => {
       var leaving = getExit(dir)
       leaving match {
         case Some(x) => {
-          characters.removeelem(player)
+          characters.removeelem(npc)
           //players -= player
           self ! RoomMessage(name + " escapes and the door slams behind them.")
         }
@@ -55,12 +60,18 @@ class Room(
       dropItem(item)
       self ! RoomMessage(name + " threw down the " + item.itemName)
     }
-    case NewPlayer(character) =>
+    case NewPlayer(character, name) => {
       characters.+=(character)
+      victims += name -> character
+    }
     case RoomMessage(message) =>
       for (p <- characters) {
         p ! Player.PrintMessage(message)
       }
+    case FindPlayer(victim) => {
+      if (victims(victim) == null) sender ! Player.FoundVictim(None)
+      else sender ! Player.FoundVictim(Some[victims(victim)])
+    }
     case m => println("Ooops in Room: " + m)
   }
 
@@ -118,9 +129,10 @@ object Room {
   case class LinkExits(roomsMap: Map[String, ActorRef])
   case object GetDescription
   case class GetExit(dir: Int, player: ActorRef, name: String)
-  case class NPCExit(dir: Int, player: ActorRef, name: String)
+  case class NPCExit(dir: Int, npc: ActorRef, name: String)
   case class GetItem(itemName: String)
   case class DropItem(name: String, item: Item)
-  case class NewPlayer(character: ActorRef)
+  case class NewPlayer(character: ActorRef, name: String)
   case class RoomMessage(message: String)
+  case class FindPlayer(victim: String)
 }

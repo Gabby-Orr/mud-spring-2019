@@ -24,8 +24,8 @@ Cookbook
 Her greatest secrets lie here, take this & take grandma's soul.
 10
 25
--1,live,porch,-1,-1,-1
-live
+-1,living,porch,-1,-1,-1
+living
 Living Room
 No windows, but plenty of loud, ticking cat clocks and obnoxious floral wallpaper.
 2
@@ -37,7 +37,7 @@ Photo
 Aww, your family's so cute in this little frame. You can see grandma, mom, dad, you, grandpa... wait, that's not grandpa!
 15
 30
-kitchen,-1,bed,-1,-1,-1
+kitchen,-1,bedroom,-1,-1,-1
 bed
 Grandma's Bedroom
 Maybe the scariest room in the house, full of unknowns. More clocks, more ticking.
@@ -50,7 +50,7 @@ TeddyBear
 Raggedy and oddly heavy, the eyes have a sinister gleam.
 2
 15
--1,bath,-1,live,attic,-1
+-1,bath,-1,living,attic,-1
 bath
 Grandma's Bathroom
 Overwhelming smell and haze of old person perfume, grey hairs and lipsticks litter the counter.
@@ -76,4 +76,4 @@ Gun
 Not from this century & hasn't been fired in generations. Unpredictable.
 5
 40
--1,-1,-1,-1,-1,bed
+-1,-1,-1,-1,-1,bedroom

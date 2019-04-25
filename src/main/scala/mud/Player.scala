@@ -35,17 +35,19 @@ class Player(
     }
     case StartRoom(room: ActorRef) => {
       loc = room
-      loc ! Room.NewPlayer(self)
+      loc ! Room.NewPlayer(self, name)
       loc ! Room.RoomMessage(name + " enters and the door slams behind them.")
       loc ! Room.GetDescription
     }
     case PrintMessage(message: String) => out.println(message)
-
+    case FoundVictim(victim: Some[ActorRef]) => {
+      ???
+    }
     case TakeExit(optRoom: Option[ActorRef]) => {
       optRoom match {
         case Some(x) => {
           loc = x
-          loc ! Room.NewPlayer(self)
+          loc ! Room.NewPlayer(self, name)
           loc ! Room.RoomMessage(name + " enters and the door slams behind them.")
           loc ! Room.GetDescription
         }
@@ -61,12 +63,13 @@ class Player(
         case None => out.println("That item is either not available or in your inventory already.")
       }
     }
-    case m => println("Oops in Player: " + m)
+    case Path(path) => out.println(path)
+    case m          => println("Oops in Player: " + m)
   }
 
   def processCommand(command: String): Unit = {
     val input = command.split(" ")
-    input(0) match {
+    input(0).toLowerCase() match {
       case "north" => move("north")
       case "south" => move("south")
       case "east"  => move("east")
@@ -117,6 +120,24 @@ class Player(
       case "exit" => {
         out.println("Bye, come visit Grandma again soon!\n")
       }
+      case "shortestpath" => {
+        Main.roomManager ! RoomManager.ShortestPath(loc, input(1))
+      }
+      case "kill" => {
+        loc ! Room.FindPlayer(input(1))
+      }
+      case "flee" => {
+        val dir = util.Random.nextInt(6)
+        dir match {
+          //TODO: maybe change this to put into priority queue
+          case 0 => loc ! Room.GetExit(0, self, name)
+          case 1 => loc ! Room.GetExit(1, self, name)
+          case 2 => loc ! Room.GetExit(2, self, name)
+          case 3 => loc ! Room.GetExit(3, self, name)
+          case 4 => loc ! Room.GetExit(4, self, name)
+          case 5 => loc ! Room.GetExit(5, self, name)
+        }
+      }
       case _ => out.println("That is not an accepted command\n Let grandma help you by typing 'help'")
     }
   }
@@ -165,6 +186,7 @@ class Player(
   def printHelp(): Unit = {
     out.println("Only the following commands are supported:\n")
     out.println(s"'north', 'south', 'east', 'west', 'up', 'down'  -- Movement; get from one room to another")
+    out.println("'shortestPath {room}'                             -- Type 'shortestPath' followed by 1st word of desired room to find quickest way to destination")
     out.println("'say' {message} 							                   -- Say message to everyone in room")
     out.println("'tell' {user} {message}                          -- Send message to a specific user")
     out.println(s"'look'                                          -- See descripton of current room, along with items & exits in room")
@@ -174,6 +196,8 @@ class Player(
     out.println("health'                                          -- View health level")
     out.println("'equip {item}'														    		 -- Type 'equip' followed by desired item in inventory to equip item for combat")
     out.println("'unequip {item}'																 -- Type 'unequip' followed by equipped item to unequip item")
+    out.println("'kill {player/npc}'                              -- Type 'kill' followed by desired victim to engage in combat")
+    out.println("'flee'                                           -- 1/5 chance of escaping combat")
     out.println("'exit'                                            -- Leave the game")
   }
 }
@@ -181,8 +205,10 @@ class Player(
 object Player {
   case object InputCheck
   case class PrintMessage(message: String)
+  case class Path(path: String)
   case class TakeExit(optRoom: Option[ActorRef])
   case class TakeItem(optItem: Option[Item])
   case class Initialize(roomManager: ActorRef)
   case class StartRoom(room: ActorRef)
+  case class FoundVictim(victim: Some[ActorRef])
 }

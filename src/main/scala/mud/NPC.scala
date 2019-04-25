@@ -16,7 +16,7 @@ class NPC(name: String) extends Actor {
     }
     case StartRoom(place) => {
       loc = place
-      loc ! Room.NewPlayer(self)
+      loc ! Room.NewPlayer(self, name)
       loc ! Room.RoomMessage(name + " enters and the door slams behind them.")
     }
     case Move(dir) => {
@@ -33,7 +33,7 @@ class NPC(name: String) extends Actor {
       optRoom match {
         case Some(x) => {
           loc = x
-          loc ! Room.NewPlayer(self)
+          loc ! Room.NewPlayer(self, name)
           loc ! Room.RoomMessage(name + " enters and the door slams behind them.")
           Main.activityManager ! ActivityManager.Enqueue(Move(util.Random.nextInt(6)), 10)
         }
