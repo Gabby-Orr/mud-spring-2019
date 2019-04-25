@@ -15,6 +15,8 @@ class Room(
   characters:        DLList[ActorRef]) extends Actor { //Buffer[ActorRef]) extends Actor {
 
   import Room._
+  import Player._
+  import NPC._
 
   private var exits: Array[Option[ActorRef]] = null
 
@@ -34,7 +36,18 @@ class Room(
         case None =>
       }
       sender ! Player.TakeExit(getExit(dir))
-      // players += player
+    }
+    case NPCExit(dir, player, name) => {
+      var leaving = getExit(dir)
+      leaving match {
+        case Some(x) => {
+          characters.removeelem(player)
+          //players -= player
+          self ! RoomMessage(name + " escapes and the door slams behind them.")
+        }
+        case None =>
+      }
+      sender ! NPC.TakeExit(getExit(dir))
     }
     case GetItem(itemName) =>
       sender ! Player.TakeItem(getItem(itemName))
@@ -105,6 +118,7 @@ object Room {
   case class LinkExits(roomsMap: Map[String, ActorRef])
   case object GetDescription
   case class GetExit(dir: Int, player: ActorRef, name: String)
+  case class NPCExit(dir: Int, player: ActorRef, name: String)
   case class GetItem(itemName: String)
   case class DropItem(name: String, item: Item)
   case class NewPlayer(character: ActorRef)

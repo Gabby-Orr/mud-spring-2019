@@ -14,24 +14,45 @@ class NPC(name: String) extends Actor {
     case Initiate(place) => {
       println("got message to initialize")
       Main.roomManager ! RoomManager.NPCRoom(place)
+      Main.activityManager ! ActivityManager.Enqueue(Move(util.Random.nextInt(6)), 5)
     }
     case StartRoom(place) => {
       loc = place
       loc ! Room.NewPlayer(self)
       loc ! Room.RoomMessage(name + " enters and the door slams behind them.")
-      println("after startroom, " + name + " is in " + loc)
+    }
+    case Move(dir) => {
+      dir match {
+        case 0 => loc ! Room.NPCExit(0, self, name)
+        case 1 => loc ! Room.NPCExit(1, self, name)
+        case 2 => loc ! Room.NPCExit(2, self, name)
+        case 3 => loc ! Room.NPCExit(3, self, name)
+        case 4 => loc ! Room.NPCExit(4, self, name)
+        case 5 => loc ! Room.NPCExit(5, self, name)
+      }
+    }
+    case TakeExit(optRoom: Option[ActorRef]) => {
+      optRoom match {
+        case Some(x) => {
+          loc = x
+          loc ! Room.NewPlayer(self)
+          loc ! Room.RoomMessage(name + " enters and the door slams behind them.")
+          Main.activityManager ! ActivityManager.Enqueue(Move(util.Random.nextInt(6)), 1)
+        }
+        case None => Main.activityManager ! ActivityManager.Enqueue(Move(util.Random.nextInt(6)), 1)
+      }
     }
     case PrintMessage(message) => //
-    case m => println("Oops in NPC: " + m)
+    case m                     => println("Oops in NPC: " + m)
   }
 
-//  while (!dead) {
-//    Main.activityManager ! ActivityManager.Enqueue("command", 10)
-//  }
 }
 object NPC {
   case object Message
   case class Initiate(place: String)
   case class StartRoom(place: ActorRef)
   case class PrintMessage(message: String)
+  case class TakeExit(optRoom: Option[ActorRef])
+  case class Move(dir: Int)
+
 }

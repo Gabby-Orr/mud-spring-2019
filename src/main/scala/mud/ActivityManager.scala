@@ -11,8 +11,8 @@ class ActivityManager extends Actor {
 
   def receive = {
     case CheckQueue => {
-      while (!pq.isEmpty) {
-      counter += 1
+      if (!pq.isEmpty) {
+        counter += 1
         if (pq.peek.delay <= counter) {
           val act = pq.dequeue()
           act.receiver ! act.command
@@ -28,6 +28,6 @@ class ActivityManager extends Actor {
 }
 object ActivityManager {
   case object CheckQueue
-  case class Enqueue(command: String, delay: Int)
+  case class Enqueue(command: Any, delay: Int)
   case class Activity(command: Any, receiver: ActorRef, delay: Int)
 }
