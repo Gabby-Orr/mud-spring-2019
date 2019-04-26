@@ -6,7 +6,7 @@ You stand before the old, dark house, and feel a deep sense of dread as you watc
 Plant
 Hasn't been watered in years, and crumbles to the touch. Pot may be useful though.
 15
-40
+2
 Smokey
 Grandma's cat, covered in scars and fearless. Will defend you if you feed her.
 40

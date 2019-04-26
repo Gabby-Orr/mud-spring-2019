@@ -20,6 +20,7 @@ class Player(
   private var loc: ActorRef = null
   private var health: Int = 100
   private var inhand: Item = null
+  private var dead: Boolean = false
 
   import Player._
 
@@ -55,11 +56,20 @@ class Player(
       out.println("OUCH! " + attacker + " attacked you with " + weapon.name + " in room: " + place + "!") //TODO: change place to string
       health -= weapon.damage
       out.println("You took " + weapon.damage + " damage! Health is at " + health)
-      if (health <= 0){
+      if (health <= 0) {
+        dead = true //TODO: Remove player from room
+        // TODO: Put victim's items in room
         out.println("Oh no, you died. Guess you can be with Grandpa now.")
         sock.close()
+      } else {
+        out.println("Options are to kill or flee")
       }
-      out.println("Options are to kill or flee")
+      sender ! Player.HitResult(name, dead, health)
+
+    }
+    case HitResult(victim: String, dead: Boolean, health: Int) => {
+      if (dead) out.println("You killed " + victim)
+      else out.println(victim + " survived attack, but their health is at " + health)
     }
     case TakeExit(optRoom: Option[ActorRef]) => {
       optRoom match {
@@ -202,9 +212,9 @@ class Player(
     }
   }
 
-//  def attack(victim: ActorRef, weapon: Item): Unit = {
-//    ??? //TODO: attack def
-//  }
+  //  def attack(victim: ActorRef, weapon: Item): Unit = {
+  //    ??? //TODO: attack def
+  //  }
 
   def printHelp(): Unit = {
     out.println("Only the following commands are supported:\n")
@@ -237,4 +247,5 @@ object Player {
   case object NoVictim
   case class Attack(victim: ActorRef, weapon: Item)
   case class GotHit(attacker: String, weapon: Item, place: ActorRef)
+  case class HitResult(name: String, dead: Boolean, health: Int)
 }
