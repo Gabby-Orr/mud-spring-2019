@@ -40,9 +40,26 @@ class Player(
       loc ! Room.GetDescription
     }
     case PrintMessage(message: String) => out.println(message)
-    case NoVictim => out.println("That victim does not exist or left the room already")
+    case NoVictim                      => out.println("That victim does not exist or is not in the room.")
     case FoundVictim(victim: ActorRef) => {
       out.println("victim found")
+      if (inhand == null) out.println("You have no weapons equipped.")
+      else {
+        Main.activityManager ! ActivityManager.Enqueue(Attack(victim, inhand), inhand.speed)
+      }
+    }
+    case Attack(victim: ActorRef, weapon: Item) => {
+      victim ! Player.GotHit(name, weapon, loc)
+    }
+    case GotHit(attacker: String, weapon: Item, place: ActorRef) => {
+      out.println("OUCH! " + attacker + " attacked you with " + weapon.name + " in room: " + place + "!") //TODO: change place to string
+      health -= weapon.damage
+      out.println("You took " + weapon.damage + " damage! Health is at " + health)
+      if (health <= 0){
+        out.println("Oh no, you died. Guess you can be with Grandpa now.")
+        sock.close()
+      }
+      out.println("Options are to kill or flee")
     }
     case TakeExit(optRoom: Option[ActorRef]) => {
       optRoom match {
@@ -120,6 +137,7 @@ class Player(
       case "help"   => printHelp()
       case "exit" => {
         out.println("Bye, come visit Grandma again soon!\n")
+        sock.close
       }
       case "shortestpath" => {
         Main.roomManager ! RoomManager.ShortestPath(loc, input(1))
@@ -184,6 +202,10 @@ class Player(
     }
   }
 
+//  def attack(victim: ActorRef, weapon: Item): Unit = {
+//    ??? //TODO: attack def
+//  }
+
   def printHelp(): Unit = {
     out.println("Only the following commands are supported:\n")
     out.println(s"'north', 'south', 'east', 'west', 'up', 'down'  -- Movement; get from one room to another")
@@ -213,4 +235,6 @@ object Player {
   case class StartRoom(room: ActorRef)
   case class FoundVictim(victim: ActorRef)
   case object NoVictim
+  case class Attack(victim: ActorRef, weapon: Item)
+  case class GotHit(attacker: String, weapon: Item, place: ActorRef)
 }
