@@ -16,7 +16,7 @@ class Room(
   characters:        DLList[ActorRef]) extends Actor { //Buffer[ActorRef]) extends Actor {
 
   val victims = mutable.Map[String, ActorRef]()
-    
+
   import Room._
   import Player._
   import NPC._
@@ -69,8 +69,8 @@ class Room(
         p ! Player.PrintMessage(message)
       }
     case FindPlayer(victim) => {
-      if (victims(victim) == null) sender ! Player.FoundVictim(None)
-      else sender ! Player.FoundVictim(Some[victims(victim)])
+      if (!victims.contains(victim)) sender ! Player.NoVictim
+      else sender ! Player.FoundVictim(victims(victim))
     }
     case m => println("Ooops in Room: " + m)
   }

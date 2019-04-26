@@ -40,8 +40,9 @@ class Player(
       loc ! Room.GetDescription
     }
     case PrintMessage(message: String) => out.println(message)
-    case FoundVictim(victim: Some[ActorRef]) => {
-      ???
+    case NoVictim => out.println("That victim does not exist or left the room already")
+    case FoundVictim(victim: ActorRef) => {
+      out.println("victim found")
     }
     case TakeExit(optRoom: Option[ActorRef]) => {
       optRoom match {
@@ -210,5 +211,6 @@ object Player {
   case class TakeItem(optItem: Option[Item])
   case class Initialize(roomManager: ActorRef)
   case class StartRoom(room: ActorRef)
-  case class FoundVictim(victim: Some[ActorRef])
+  case class FoundVictim(victim: ActorRef)
+  case object NoVictim
 }

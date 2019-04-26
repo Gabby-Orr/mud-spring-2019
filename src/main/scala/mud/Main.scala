@@ -23,7 +23,7 @@ object Main extends App {
   val ss = new ServerSocket(8080)
   //  npcManager ! NPCManager.CreateNPC("Grandma", "attic")
   //  npcManager ! NPCManager.CreateNPC("Grandpa's_Ghost", "live")
-  npcManager ! NPCManager.CreateNPC("Mom", "kitchen")
+ // npcManager ! NPCManager.CreateNPC("Mom", "kitchen")
 
   while (true) {
     val sock = ss.accept()
