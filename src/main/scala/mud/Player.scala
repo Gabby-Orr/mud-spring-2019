@@ -21,6 +21,7 @@ class Player(
   private var health: Int = 100
   private var inhand: Item = null
   private var dead: Boolean = false
+  private var canmove: Boolean = true
 
   import Player._
 
@@ -51,6 +52,7 @@ class Player(
     }
     case Attack(victim: ActorRef, weapon: Item) => {
       victim ! Player.GotHit(name, weapon, loc)
+      canmove = false
     }
     case GotHit(attacker: String, weapon: Item, place: ActorRef) => {
       out.println("OUCH! " + attacker + " attacked you with " + weapon.name + " in room: " + place + "!") //TODO: change place to string
@@ -63,13 +65,16 @@ class Player(
         sock.close()
       } else {
         out.println("Options are to kill or flee")
+        canmove = false
       }
       sender ! Player.HitResult(name, dead, health)
 
     }
     case HitResult(victim: String, dead: Boolean, health: Int) => {
-      if (dead) out.println("You killed " + victim)
-      else out.println(victim + " survived attack, but their health is at " + health)
+      if (dead) {
+        out.println("You killed " + victim)
+        canmove = true
+      } else out.println(victim + " survived attack, but their health is at " + health)
     }
     case TakeExit(optRoom: Option[ActorRef]) => {
       optRoom match {
@@ -202,19 +207,18 @@ class Player(
   def move(dir: String): Unit = {
     //    var moves = Map[String, Unit]("north" -> getOut(0), "south" -> getOut(1), "east" -> getOut(2), "west" -> getOut(3), "up" -> getOut(4), "down" -> getOut(5))
     //    moves(dir)
-    dir match {
-      case "north" => loc ! Room.GetExit(0, self, name)
-      case "south" => loc ! Room.GetExit(1, self, name)
-      case "east"  => loc ! Room.GetExit(2, self, name)
-      case "west"  => loc ! Room.GetExit(3, self, name)
-      case "up"    => loc ! Room.GetExit(4, self, name)
-      case "down"  => loc ! Room.GetExit(5, self, name)
+    if (canmove) {
+      dir match {
+        case "north" => loc ! Room.GetExit(0, self, name)
+        case "south" => loc ! Room.GetExit(1, self, name)
+        case "east"  => loc ! Room.GetExit(2, self, name)
+        case "west"  => loc ! Room.GetExit(3, self, name)
+        case "up"    => loc ! Room.GetExit(4, self, name)
+        case "down"  => loc ! Room.GetExit(5, self, name)
+      }
     }
   }
 
-  //  def attack(victim: ActorRef, weapon: Item): Unit = {
-  //    ??? //TODO: attack def
-  //  }
 
   def printHelp(): Unit = {
     out.println("Only the following commands are supported:\n")
