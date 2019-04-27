@@ -68,7 +68,21 @@ class Player(
         canmove = false
       }
       sender ! Player.HitResult(name, dead, health)
-
+    }
+    case GotHitNPC(attacker, place, damage) => {
+      out.println("OUCH! " + attacker + " attacked you in room: " + place + "!") //TODO: change place to string
+      health -= damage
+      out.println("You took " + damage + " damage! Health is at " + health)
+      if (health <= 0) {
+        dead = true //TODO: Remove player from room
+        // TODO: Put victim's items in room
+        out.println("Oh no, you died. Guess you can be with Grandpa now.")
+        sock.close()
+      } else {
+        out.println("Options are to kill or flee")
+        canmove = false
+      }
+      sender ! NPC.HitResult(name, dead)
     }
     case HitResult(victim: String, dead: Boolean, health: Int) => {
       if (dead) {
@@ -219,7 +233,6 @@ class Player(
     }
   }
 
-
   def printHelp(): Unit = {
     out.println("Only the following commands are supported:\n")
     out.println(s"'north', 'south', 'east', 'west', 'up', 'down'  -- Movement; get from one room to another")
@@ -251,5 +264,6 @@ object Player {
   case object NoVictim
   case class Attack(victim: ActorRef, weapon: Item)
   case class GotHit(attacker: String, weapon: Item, place: ActorRef)
+  case class GotHitNPC(attacker: String, place: ActorRef, damage: Int)
   case class HitResult(name: String, dead: Boolean, health: Int)
 }

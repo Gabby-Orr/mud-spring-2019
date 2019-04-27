@@ -21,9 +21,9 @@ object Main extends App {
   system.scheduler.schedule(0.seconds, 1000.millis, activityManager, ActivityManager.CheckQueue)
 
   val ss = new ServerSocket(8080)
-  //  npcManager ! NPCManager.CreateNPC("Grandma", "attic")
-  //  npcManager ! NPCManager.CreateNPC("Grandpa's_Ghost", "live")
- // npcManager ! NPCManager.CreateNPC("Mom", "kitchen")
+  npcManager ! NPCManager.CreateNPC("Grandma", "attic")
+  npcManager ! NPCManager.CreateNPC("Grandpa's_Ghost", "live")
+  npcManager ! NPCManager.CreateNPC("Mom", "kitchen")
 
   while (true) {
     val sock = ss.accept()

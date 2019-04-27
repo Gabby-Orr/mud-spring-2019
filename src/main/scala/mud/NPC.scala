@@ -8,12 +8,15 @@ class NPC(name: String) extends Actor {
   import NPC._
   private var dead = false
   private var loc: ActorRef = null
-  private var health: Int = 500
+  private var delay: Int = 25
+  private var health: Int = 500 //TODO: make health & speed & damage different for diff. NPCs
+  private var hitspeed: Int = 20
+  private var damage: Int = 15
 
   def receive = {
     case Initiate(place) => {
       Main.roomManager ! RoomManager.NPCRoom(place)
-      Main.activityManager ! ActivityManager.Enqueue(Move(util.Random.nextInt(6)), 10)
+      Main.activityManager ! ActivityManager.Enqueue(Move(util.Random.nextInt(6)), delay)
     }
     case StartRoom(place) => {
       loc = place
@@ -37,18 +40,31 @@ class NPC(name: String) extends Actor {
             loc = x
             loc ! Room.NewPlayer(self, name)
             loc ! Room.RoomMessage(name + " enters and the door slams behind them.")
-            Main.activityManager ! ActivityManager.Enqueue(Move(util.Random.nextInt(6)), 10)
+            Main.activityManager ! ActivityManager.Enqueue(Move(util.Random.nextInt(6)), delay)
           }
-          case None => Main.activityManager ! ActivityManager.Enqueue(Move(util.Random.nextInt(6)), 10)
+          case None => Main.activityManager ! ActivityManager.Enqueue(Move(util.Random.nextInt(6)), delay)
         }
       }
-      case class FoundVictim(victim: ActorRef)
-      case object NoVictim
-      case class Attack(victim: ActorRef, weapon: Item)
-      case class GotHit(attacker: String, weapon: Item, place: ActorRef) {
-        ???
+    case FoundVictim(victim: ActorRef) => {
+      Main.activityManager ! ActivityManager.Enqueue(Attack(victim), hitspeed)
+    }
+    case NoVictim =>
+    case Attack(victim: ActorRef) => {
+      victim ! Player.GotHitNPC(name, loc, damage)
+    }
+    case GotHit(attacker: String, weapon: Item, place: ActorRef) => {
+      health -= weapon.damage
+      if (health <= 0) {
+        dead = true //TODO: Remove player from room
+        // TODO: Put victim's items in room
+      } else {
+        loc ! Room.FindPlayer(attacker)
       }
-      case class HitResult(name: String, dead: Boolean, health: Int)
+      sender ! Player.HitResult(name, dead, health)
+    }
+    case HitResult(name: String, dead: Boolean) => {
+      if (!dead) loc ! Room.FindPlayer(name)
+    }
     case PrintMessage(message) => //TODO: figure out how to get rid of these messages
     case m                     => println("Oops in NPC: " + m)
   }
@@ -62,7 +78,7 @@ object NPC {
   case class Move(dir: Int)
   case class FoundVictim(victim: ActorRef)
   case object NoVictim
-  case class Attack(victim: ActorRef, weapon: Item)
+  case class Attack(victim: ActorRef)
   case class GotHit(attacker: String, weapon: Item, place: ActorRef)
-  case class HitResult(name: String, dead: Boolean, health: Int)
+  case class HitResult(name: String, dead: Boolean)
 }
