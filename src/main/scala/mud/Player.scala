@@ -51,7 +51,7 @@ class Player(
       }
     }
     case Attack(victim: ActorRef, weapon: Item) => {
-      victim ! Player.GotHit(name, weapon, loc)
+      victim ! GotHit(name, weapon, loc)
       canmove = false
     }
     case GotHit(attacker: String, weapon: Item, place: ActorRef) => {

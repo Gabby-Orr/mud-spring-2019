@@ -56,11 +56,13 @@ class NPC(name: String) extends Actor {
       health -= weapon.damage
       if (health <= 0) {
         dead = true //TODO: Remove player from room
+        sender ! Player.HitResult(name, dead, health)
         // TODO: Put victim's items in room
       } else {
+        sender ! Player.HitResult(name, dead, health)
         loc ! Room.FindPlayer(attacker)
       }
-      sender ! Player.HitResult(name, dead, health)
+      //sender ! Player.HitResult(name, dead, health)
     }
     case HitResult(name: String, dead: Boolean) => {
       if (!dead) loc ! Room.FindPlayer(name)

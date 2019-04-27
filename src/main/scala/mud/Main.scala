@@ -22,7 +22,7 @@ object Main extends App {
 
   val ss = new ServerSocket(8080)
   npcManager ! NPCManager.CreateNPC("Grandma", "attic")
-  npcManager ! NPCManager.CreateNPC("Grandpa's_Ghost", "live")
+  npcManager ! NPCManager.CreateNPC("Grandpa's_Ghost", "living")
   npcManager ! NPCManager.CreateNPC("Mom", "kitchen")
 
   while (true) {
