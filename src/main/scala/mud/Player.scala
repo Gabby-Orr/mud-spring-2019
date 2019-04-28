@@ -55,7 +55,7 @@ class Player(
       canmove = false
     }
     case GotHit(attacker: String, weapon: Item, place: ActorRef) => {
-      out.println("OUCH! " + attacker + " attacked you with " + weapon.name + " in room: " + place + "!") //TODO: change place to string
+      out.println("OUCH! " + attacker + " attacked you with " + weapon.name + " in room: " + place.path.name + "!") //TODO: change place to string
       health -= weapon.damage
       out.println("You took " + weapon.damage + " damage! Health is at " + health)
       if (health <= 0) {
@@ -221,7 +221,8 @@ class Player(
   def move(dir: String): Unit = {
     //    var moves = Map[String, Unit]("north" -> getOut(0), "south" -> getOut(1), "east" -> getOut(2), "west" -> getOut(3), "up" -> getOut(4), "down" -> getOut(5))
     //    moves(dir)
-    if (canmove) {
+    if (!canmove) out.println("You cannot exit during combat, either flee or kill")
+    else {
       dir match {
         case "north" => loc ! Room.GetExit(0, self, name)
         case "south" => loc ! Room.GetExit(1, self, name)
