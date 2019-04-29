@@ -45,14 +45,14 @@ class NPC(name: String) extends Actor {
           case None => Main.activityManager ! ActivityManager.Enqueue(Move(util.Random.nextInt(6)), delay)
         }
       }
-    case FoundVictim(victim: ActorRef) => {
+    case Player.FoundVictim(victim: ActorRef) => {
       Main.activityManager ! ActivityManager.Enqueue(Attack(victim), hitspeed)
     }
-    case NoVictim =>
+    case Player.NoVictim =>
     case Attack(victim: ActorRef) => {
       victim ! Player.GotHitNPC(name, loc, damage)
     }
-    case GotHit(attacker: String, weapon: Item, place: ActorRef) => {
+    case Player.GotHit(attacker: String, weapon: Item, place: ActorRef) => {
       health -= weapon.damage
       if (health <= 0) {
         dead = true //TODO: Remove player from room
@@ -67,7 +67,7 @@ class NPC(name: String) extends Actor {
     case HitResult(name: String, dead: Boolean) => {
       if (!dead) loc ! Room.FindPlayer(name)
     }
-    case PrintMessage(message) => //TODO: figure out how to get rid of these messages
+    case Player.PrintMessage(message) => //TODO: figure out how to get rid of these messages
     case m                     => println("Oops in NPC: " + m)
   }
   // TODO: Apply combat
