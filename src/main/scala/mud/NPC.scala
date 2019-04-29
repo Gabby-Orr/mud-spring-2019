@@ -70,7 +70,6 @@ class NPC(name: String) extends Actor {
     case Player.PrintMessage(message) => //TODO: figure out how to get rid of these messages
     case m                     => println("Oops in NPC: " + m)
   }
-  // TODO: Apply combat
 }
 object NPC {
   case class Initiate(place: String)

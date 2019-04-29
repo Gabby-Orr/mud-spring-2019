@@ -13,7 +13,6 @@ class RoomManager extends Actor {
   val rooms = readRooms()
   for (room <- context.children) room ! Room.LinkExits(rooms)
 
-
   def receive = {
     case ExitInfo(keyword, exitKeys) => {
       exitmap += keyword -> exitKeys
@@ -24,23 +23,41 @@ class RoomManager extends Actor {
       sender ! NPC.StartRoom(rooms(place))
     case ShortestPath(locref, dest) => {
       val loc = roommap(locref)
-      sender ! Player.Path(shortest(loc, dest))
+      sender ! Player.Path(shortest(loc, dest, Set.empty).mkString(" "))
+//      sender ! Player.Path(s"${shortest(loc, dest, Set.empty).mkString(" ")}\n${shortroom.mkString(" ")}")
+      //short = List.empty
     }
     case m => println("Ooops in RoomManager: " + m)
   }
-  
-  def shortest(loc: String, dest: String): String = {
-    val visited = Set[String](loc)
-    if (loc == dest) ""
-    else if (!rooms.contains(dest)){
+
+  private var shortroom = List[String]()
+  private var shortexit = List[String]()
+
+  def shortest(loc: String, dest: String, visited: Set[String]): List[String] = {
+    val newVisited = visited + loc 
+    if (loc == dest) shortexit//shortroom
+    else if (!rooms.contains(dest)) {
       "That destination is not on the map"
-    }
-    else {
-      for (i <- exitmap(loc); if (!visited(i))) yield {
-        exitmap(i) + shortest(i, dest)
+    } else {
+      for (i <- exitmap(loc); if (i != "-1"); if (!visited(i))) yield {
+        //shortroom = i :: shortest(i, dest, newVisited)
+        var dir = exitmap(loc).indexOf(i)
+        println("before match: " + dir)
+        dir match {
+          case 0 => shortexit = "north" :: shortest(i, dest, newVisited)
+          case 1 => shortexit = "south" :: shortest(i, dest, newVisited)
+          case 2 => shortexit = "east" :: shortest(i, dest, newVisited)
+          case 3 => shortexit = "west" :: shortest(i, dest, newVisited)
+          case 4 => shortexit = "up" :: shortest(i, dest, newVisited)
+          case 5 => shortexit = "down" :: shortest(i, dest, newVisited)
+          case _ => shortexit = " " :: shortest(i, dest, newVisited)
+        }
+        println("after match: " + dir)
+        //shortexit = dir :: shortest(i, dest, newVisited)
+
       }
     }
-    ""
+    shortexit//shortroom
   }
 
   def readRooms(): Map[String, ActorRef] = {
@@ -62,6 +79,7 @@ class RoomManager extends Actor {
     var characters = new DLList[ActorRef] //Buffer.empty[ActorRef]
     val theroom = context.actorOf(Props(new Room(name, desc, items, exits, characters)), keyword)
     roommap += theroom -> keyword
+    exitmap += keyword -> exits
     keyword -> theroom
   }
 

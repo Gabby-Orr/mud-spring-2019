@@ -55,7 +55,7 @@ class Player(
       canmove = false
     }
     case GotHit(attacker: String, weapon: Item, place: ActorRef) => {
-      out.println("OUCH! " + attacker + " attacked you with " + weapon.name + " in room: " + place.path.name + "!") //TODO: change place to string
+      out.println("OUCH! " + attacker + " attacked you with " + weapon.name + " in room: " + place.path.name + "!") 
       health -= weapon.damage
       out.println("You took " + weapon.damage + " damage! Health is at " + health)
       if (health <= 0) {
