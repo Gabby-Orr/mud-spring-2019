@@ -70,7 +70,7 @@ class Player(
       sender ! Player.HitResult(name, dead, health)
     }
     case GotHitNPC(attacker, place, damage) => {
-      out.println("OUCH! " + attacker + " attacked you in room: " + place + "!") //TODO: change place to string
+      out.println("OUCH! " + attacker + " attacked you in room: " + place.path.name + "!") //TODO: change place to string
       health -= damage
       out.println("You took " + damage + " damage! Health is at " + health)
       if (health <= 0) {
