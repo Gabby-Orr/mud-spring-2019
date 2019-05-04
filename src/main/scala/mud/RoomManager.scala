@@ -24,9 +24,14 @@ class RoomManager extends Actor {
       sender ! NPC.StartRoom(rooms(place))
     case ShortestPath(locref, dest) => {
       val loc = roommap(locref)
+      println(loc)
+      println(dest)
       sender ! Player.Path(shortest(loc, dest, Set.empty).mkString(" "))
+
+      //      sender ! Player.Path(shortest(loc, dest, Set.empty))
+
       //      sender ! Player.Path(s"${shortest(loc, dest, Set.empty).mkString(" ")}\n${shortroom.mkString(" ")}")
-      //short = List.empty
+      shortexit = List.empty
     }
     case m => println("Ooops in RoomManager: " + m)
   }
@@ -36,14 +41,14 @@ class RoomManager extends Actor {
 
   def shortest(loc: String, dest: String, visited: Set[String]): List[String] = {
     val newVisited = visited + loc
-    if (loc == dest) shortexit //shortroom
+    if (loc == dest) "" //shortroom
     else if (!rooms.contains(dest)) {
       "That destination is not on the map"
     } else {
       for (i <- exitmap(loc); if (i != "-1"); if (!visited(i))) yield {
         //shortroom = i :: shortest(i, dest, newVisited)
         var dir = exitmap(loc).indexOf(i)
-        //        println("before match: " + dir)
+        println("before match: " + dir)
         dir match {
           case 0 => shortexit = "north" :: shortest(i, dest, newVisited)
           case 1 => shortexit = "south" :: shortest(i, dest, newVisited)
@@ -53,10 +58,14 @@ class RoomManager extends Actor {
           case 5 => shortexit = "down" :: shortest(i, dest, newVisited)
           case _ => shortexit :+ " "
         }
-        //        println("after match: " + dir)
+        // println("after match: " + dir)
         //shortexit = dir :: shortest(i, dest, newVisited)
 
       }
+    }
+    println(shortexit)
+    for (i <- shortexit) {
+      println(i)
     }
     shortexit //shortroom
   }
