@@ -126,7 +126,7 @@ class Room(
 }
 
 object Room {
-  case class LinkExits(roomsMap: Map[String, ActorRef])
+  case class LinkExits(roomsMap: MyBSTMap[String, ActorRef])
   case object GetDescription
   case class GetExit(dir: Int, player: ActorRef, name: String)
   case class NPCExit(dir: Int, npc: ActorRef, name: String)

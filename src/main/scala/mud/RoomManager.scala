@@ -19,12 +19,13 @@ class RoomManager extends Actor {
     }
     case GetStart =>
       sender ! Player.StartRoom(rooms("porch"))
+    // will be changed to StartRoom(rooms.get("porch"))
     case NPCRoom(place) =>
       sender ! NPC.StartRoom(rooms(place))
     case ShortestPath(locref, dest) => {
       val loc = roommap(locref)
       sender ! Player.Path(shortest(loc, dest, Set.empty).mkString(" "))
-//      sender ! Player.Path(s"${shortest(loc, dest, Set.empty).mkString(" ")}\n${shortroom.mkString(" ")}")
+      //      sender ! Player.Path(s"${shortest(loc, dest, Set.empty).mkString(" ")}\n${shortroom.mkString(" ")}")
       //short = List.empty
     }
     case m => println("Ooops in RoomManager: " + m)
@@ -34,15 +35,15 @@ class RoomManager extends Actor {
   private var shortexit = List[String]()
 
   def shortest(loc: String, dest: String, visited: Set[String]): List[String] = {
-    val newVisited = visited + loc 
-    if (loc == dest) shortexit//shortroom
+    val newVisited = visited + loc
+    if (loc == dest) shortexit //shortroom
     else if (!rooms.contains(dest)) {
       "That destination is not on the map"
     } else {
       for (i <- exitmap(loc); if (i != "-1"); if (!visited(i))) yield {
         //shortroom = i :: shortest(i, dest, newVisited)
         var dir = exitmap(loc).indexOf(i)
-        println("before match: " + dir)
+        //        println("before match: " + dir)
         dir match {
           case 0 => shortexit = "north" :: shortest(i, dest, newVisited)
           case 1 => shortexit = "south" :: shortest(i, dest, newVisited)
@@ -50,21 +51,33 @@ class RoomManager extends Actor {
           case 3 => shortexit = "west" :: shortest(i, dest, newVisited)
           case 4 => shortexit = "up" :: shortest(i, dest, newVisited)
           case 5 => shortexit = "down" :: shortest(i, dest, newVisited)
-          case _ => shortexit = " " :: shortest(i, dest, newVisited)
+          case _ => shortexit :+ " "
         }
-        println("after match: " + dir)
+        //        println("after match: " + dir)
         //shortexit = dir :: shortest(i, dest, newVisited)
 
       }
     }
-    shortexit//shortroom
+    shortexit //shortroom
   }
 
-  def readRooms(): Map[String, ActorRef] = {
+  //  def readRooms(): Map[String, ActorRef] = {
+  //    val source = scala.io.Source.fromFile("map.txt")
+  //    val lines = source.getLines()
+  //    val rooms = Array.fill(lines.next.trim.toInt)(readRoom(lines)).toMap
+  //    source.close()
+  //    rooms
+  //  }
+
+  def readRooms(): MyBSTMap[String, ActorRef] = {
     val source = scala.io.Source.fromFile("map.txt")
     val lines = source.getLines()
-    val rooms = Array.fill(lines.next.trim.toInt)(readRoom(lines)).toMap
+    val rooms = new MyBSTMap[String, ActorRef](_ < _)
+    val roomsArray = Array.fill(lines.next.trim.toInt)(readRoom(lines))
     source.close()
+    for ((k, v) <- roomsArray) {
+      rooms += ((k, v))
+    }
     rooms
   }
 
